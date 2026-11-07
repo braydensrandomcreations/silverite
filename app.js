@@ -1240,4 +1240,3 @@ window.addEventListener('pointermove', (event) => {
 window.addEventListener('pointerout', (event) => {
   if (!event.relatedTarget) document.body.classList.remove('cursor-glow-active');
 }, { passive: true });
-
