@@ -1,0 +1,25 @@
+{
+  "name": "silverite",
+  "version": "0.12.11.3.2",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@mercuryworkshop/bare-mux": "^2.1.9",
+    "@mercuryworkshop/epoxy-transport": "^3.0.1",
+    "@mercuryworkshop/libcurl-transport": "^2.0.6",
+    "@mercuryworkshop/scramjet": "2.0.67-alpha.2",
+    "@mercuryworkshop/scramjet-controller": "0.0.14",
+    "@mercuryworkshop/scramjet-utils": "0.0.3",
+    "@mercuryworkshop/wisp-js": "^0.4.1",
+    "@titaniumnetwork-dev/ultraviolet": "^3.2.10",
+    "express": "^4.21.2",
+    "silverite-uv-epoxy": "npm:@mercuryworkshop/epoxy-transport@^2.1.28",
+    "silverite-uv-libcurl": "npm:@mercuryworkshop/libcurl-transport@^1.5.2"
+  }
+}
