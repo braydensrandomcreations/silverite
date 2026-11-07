@@ -554,7 +554,7 @@ try{favorites=new Set(JSON.parse(localStorage.getItem('silverite-favorites')||'[
 function notify(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500)}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function cardTemplate(game){
-  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='assets/no-thumbnail.png'}">`;
+  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png'}">`;
   const source=game.source?`<div class="game-source">${escapeHTML(game.source)}</div>`:'';
   const action=escapeHTML(game.actionLabel||'PLAY');
   return `<article class="game-card" data-game="${safe}"><div class="game-art art-${game.art} has-thumb">${image}<span class="art-glyph thumb-fallback">${escapeHTML(game.glyph||'G')}</span><button class="game-fav ${fav?'favorited':''}" data-fav="${safe}" aria-label="${fav?'Remove from':'Add to'} favorites">${svgIcon('heart',16,'icon',fav)}</button></div><div class="game-name" title="${safe}">${safe}</div>${source}<button class="play-btn" data-play="${safe}">${action}</button></article>`
@@ -563,12 +563,12 @@ const G4M3S_PAGE_SIZE = 96;
 let currentGamePage = 0;
 let selectedGameLibrary = "SILVERITE";
 const GAME_LIBRARY_FILTERS = [
-  {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"assets/icons/silverite.png"},
-  {id:"UBZONE",name:"UBZone",fallback:"U",icon:"assets/icons/ubz.png"},
-  {id:"GN-MATH",name:"GN-MATH",fallback:"π",icon:"assets/icons/gn.png"},
-  {id:"UGS",name:"Ultimate Game Stash",fallback:"UGS",icon:"assets/icons/ugs.png"},
-  {id:"SERAPH",name:"Seraph",fallback:"S",icon:"assets/icons/seraph.png"},
-  {id:"TRUFFLED",name:"Truffled",fallback:"T",icon:"assets/icons/truffled.png"},
+  {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/silverite.png"},
+  {id:"UBZONE",name:"UBZone",fallback:"U",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ubz.png"},
+  {id:"GN-MATH",name:"GN-MATH",fallback:"π",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/gn.png"},
+  {id:"UGS",name:"Ultimate Game Stash",fallback:"UGS",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ugs.png"},
+  {id:"SERAPH",name:"Seraph",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/seraph.png"},
+  {id:"TRUFFLED",name:"Truffled",fallback:"T",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/truffled.png"},
   {id:"CUSTOM",name:"Custom games",fallback:"+",icon:""}
 ];
 function libraryFilterTemplate(filter,count){
@@ -1240,3 +1240,4 @@ window.addEventListener('pointermove', (event) => {
 window.addEventListener('pointerout', (event) => {
   if (!event.relatedTarget) document.body.classList.remove('cursor-glow-active');
 }, { passive: true });
+
