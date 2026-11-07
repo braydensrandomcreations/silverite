@@ -45,7 +45,6 @@ const HOME_MESSAGES = [
   "my mother ate fries",
   "this message was randomly selected. wow",
   "i know this place better than my home",
-  "ILL BLOCK YOU OUTTA THIS FARM!!",
   "this server has a weight limit pink your holdin it up!! - Elliot, 2023",
   "cooko monster",
   "goodbah! - chef",
@@ -55,7 +54,30 @@ const HOME_MESSAGES = [
   "all hail the obama triangle",
   "in theory, this message should work",
   "plot twist: you actually finished your homework",
-  "br4y says hello"
+  "br4y says hello",
+  "floccinaucinihilipilificatiophobia",
+  "silverite but everyone sings it",
+  "bing bing bing o algo",
+  "me when",
+  "zip zorp glubo glorp",
+  "how many messages are there? 68.",
+  "app.js carries",
+  "100% opsec",
+  "dip",
+  "huzzah!",
+  "mei mei snow leopard",
+  "game on! - Coach",
+  "bonk",
+  "me is yay",
+  "Before you criticize someone, walk a mile in their shoes. That way, you'll be a mile from them, and you'll have their shoes. — Jack Hande",
+  "if someone tells you a secret, tell everyone else so you dont forget it - MrPotato0820",
+  "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe. - Albert Einstein",
+  "I love this mod, this is my favroite fnf mod, everything about it just great, im happy they updated the mod and gald that I played it - swaggotskills",
+  "when teach is serious but u pull the baldi",
+  "bumm bum bummm bumm buummmmm",
+  "no kitty this is mah pot pah!",
+  "im so in love with you, your so in love with him, i dont know what to do",
+  "if your gonna be a skid, at least use claude - OrangeesDev"
 ];
 
 /* =====================================================================
@@ -263,7 +285,8 @@ const EXTERNAL_LIBRARY_CONFIG = {
   },
   seraph: {
     catalog: "https://cdn.jsdelivr.net/gh/skibbsz/seraph@7635e52e48719d2b902b0b49dd0dee80ee9a8a7f/games.json",
-    root: "https://cdn.jsdelivr.net/gh/skibbsz/seraph@7635e52e48719d2b902b0b49dd0dee80ee9a8a7f/"
+    root: "https://cdn.jsdelivr.net/gh/skibbsz/seraph@7635e52e48719d2b902b0b49dd0dee80ee9a8a7f/",
+    thumbnailRoot: "https://cdn.jsdelivr.net/gh/ubg-py/seraph@main/images/thumbnails/"
   }
 };
 // Imported libraries are intentionally excluded from the automatic full preload by default.
@@ -325,8 +348,10 @@ function appendExternalGames(entries, source, seen) {
     const url = String(entry.url || "").trim();
     if (!name || !isAllowedGameAssetUrl(url, "game") || !shouldAddExternalGame(name, seen)) continue;
     const image = entry.image && isAllowedGameAssetUrl(entry.image, "image") ? String(entry.image) : "";
+    const imageCandidates = Array.isArray(entry.imageCandidates) ? entry.imageCandidates.filter(candidate=>isAllowedGameAssetUrl(candidate,"image")) : [];
     const game = {
       name, file: String(entry.file || url.split(/[?#]/)[0].split("/").pop() || name), url, image,
+      imageCandidates,
       glyph: makeGameGlyph(name), art: arts[g4m3s.length % arts.length], source,
       launchMode: entry.launchMode || "iframe", actionLabel: entry.actionLabel || "PLAY"
     };
@@ -372,15 +397,38 @@ async function fetchUgsEntries() {
 async function fetchSeraphEntries() {
   const response = await fetchExternalText(EXTERNAL_LIBRARY_CONFIG.seraph.catalog);
   const rows = JSON.parse(response);
+  const thumbnailRoot=EXTERNAL_LIBRARY_CONFIG.seraph.thumbnailRoot;
+  const makeThumbnailCandidates=row=>{
+    const candidates=[];const add=value=>{if(value&&!candidates.includes(value))candidates.push(value);};
+    for(const value of [row.thumbnail,row.image,row.cover,row.coverImage]){
+      if(typeof value!=='string'||!value.trim())continue;
+      const raw=value.trim();
+      if(/^https?:\/\//i.test(raw)){add(raw);continue;}
+      const relative=raw.replace(/^\/?images\/thumbnails\//i,'').replace(/^\/+/, '');
+      if(/\.[a-z0-9]{2,5}$/i.test(relative))add(thumbnailRoot+relative.split('/').map(encodeURIComponent).join('/'));
+      else if(relative)add(thumbnailRoot+relative.split('/').map(encodeURIComponent).join('/')+'.png');
+    }
+    const urlParts=String(row.url||'').split('/').filter(Boolean);
+    let folder=urlParts[urlParts.length-1]||'';
+    if(/\.[a-z0-9]{2,5}$/i.test(folder))folder=urlParts[urlParts.length-2]||folder.replace(/\.[^.]+$/,'');
+    const nameSlug=String(row.name||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+    for(const stem of [folder,nameSlug,String(row.name||'').trim()].filter(Boolean)){
+      if(/\.[a-z0-9]{2,5}$/i.test(stem))add(thumbnailRoot+stem.split('/').map(encodeURIComponent).join('/'));
+      else for(const extension of ['png','jpg'])add(thumbnailRoot+stem.split('/').map(encodeURIComponent).join('/')+'.'+extension);
+    }
+    return candidates;
+  };
   return rows.filter(row => row && row.name && typeof row.url === "string" && row.url.startsWith("/games/"))
-    .map(row => ({
-      name: row.name,
-      file: `seraph/${row.url.replace(/^\/+/, "")}`,
-      url: EXTERNAL_LIBRARY_CONFIG.seraph.root + row.url.replace(/^\/+/, ""),
-      // The Seraph manifest points to /images/thumbnails/, which is absent from its current public tree.
-      // Use the built-in letter fallback rather than broken thumbnail links.
-      image: ""
-    }));
+    .map(row => {
+      const imageCandidates=makeThumbnailCandidates(row);
+      return {
+        name: row.name,
+        file: `seraph/${row.url.replace(/^\/+/, "")}`,
+        url: EXTERNAL_LIBRARY_CONFIG.seraph.root + row.url.replace(/^\/+/, ""),
+        image: imageCandidates[0]||"",
+        imageCandidates
+      };
+    });
 }
 async function loadExternalGameLibraries() {
   const seen = new Set(g4m3s.map(game => normalizeGameKey(game.name)));
@@ -478,16 +526,18 @@ const $=(s,root=document)=>root.querySelector(s);
 const $$=(s,root=document)=>[...root.querySelectorAll(s)];
 const SETTINGS_KEY='silverite-settings-v2';
 const LEGACY_SETTINGS_KEY='silverite-settings-v1';
-const DEFAULT_SETTINGS={accent:'#f0f0f0',accentRgb:'240,240,240',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'ultraviolet'};
+const DEFAULT_SETTINGS={accent:'#f0f0f0',accentRgb:'240,240,240',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundStyle:'grid',backgroundImage:'',backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'scramjet',defaultTransport:'libcurl'};
 let userSettings={...DEFAULT_SETTINGS};
 try{
   const currentSettings=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
   if(currentSettings&&typeof currentSettings==='object'){
     userSettings={...DEFAULT_SETTINGS,...currentSettings};
+    if(!Object.hasOwn(currentSettings,'backgroundStyle'))userSettings.backgroundStyle=currentSettings.backgroundGrid===false?'off':'grid';
   }else{
     const legacySettings=JSON.parse(localStorage.getItem(LEGACY_SETTINGS_KEY)||'null');
     if(legacySettings&&typeof legacySettings==='object'){
       userSettings={...DEFAULT_SETTINGS,...legacySettings};
+      if(!Object.hasOwn(legacySettings,'backgroundStyle'))userSettings.backgroundStyle=legacySettings.backgroundGrid===false?'off':'grid';
       // The old release used amber as its built-in default. Migrate that default to white,
       // while preserving any accent the user deliberately chose.
       if(String(legacySettings.accent||'').toLowerCase()==='#ffb52e'){
@@ -504,14 +554,14 @@ try{favorites=new Set(JSON.parse(localStorage.getItem('silverite-favorites')||'[
 function notify(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500)}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function cardTemplate(game){
-  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const image=game.image?`<img class="game-thumb" src="${escapeHTML(game.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.remove();this.parentElement.classList.remove('has-thumb')">`:'';
+  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='assets/no-thumbnail.png'}">`;
   const source=game.source?`<div class="game-source">${escapeHTML(game.source)}</div>`:'';
   const action=escapeHTML(game.actionLabel||'PLAY');
-  return `<article class="game-card" data-game="${safe}"><div class="game-art art-${game.art} ${game.image?'has-thumb':''}">${image}<span class="art-glyph thumb-fallback">${escapeHTML(game.glyph||'G')}</span><button class="game-fav ${fav?'favorited':''}" data-fav="${safe}" aria-label="${fav?'Remove from':'Add to'} favorites">${svgIcon('heart',16,'icon',fav)}</button></div><div class="game-name" title="${safe}">${safe}</div>${source}<button class="play-btn" data-play="${safe}">${action}</button></article>`
+  return `<article class="game-card" data-game="${safe}"><div class="game-art art-${game.art} has-thumb">${image}<span class="art-glyph thumb-fallback">${escapeHTML(game.glyph||'G')}</span><button class="game-fav ${fav?'favorited':''}" data-fav="${safe}" aria-label="${fav?'Remove from':'Add to'} favorites">${svgIcon('heart',16,'icon',fav)}</button></div><div class="game-name" title="${safe}">${safe}</div>${source}<button class="play-btn" data-play="${safe}">${action}</button></article>`
 }
 const G4M3S_PAGE_SIZE = 96;
 let currentGamePage = 0;
-let selectedGameLibrary = "ALL";
+let selectedGameLibrary = "SILVERITE";
 const GAME_LIBRARY_FILTERS = [
   {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"assets/icons/silverite.png"},
   {id:"UBZONE",name:"UBZone",fallback:"U",icon:"assets/icons/ubz.png"},
@@ -551,15 +601,188 @@ function renderg4m3s(){
     const matchesSearch=!q||g.name.toLowerCase().includes(q)||g.file.toLowerCase().includes(q)||source.toLowerCase().includes(q);
     return matchesLibrary&&matchesSearch;
   });
+  if(selectedGameLibrary==='ALL')list.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true}));
   renderLibraryFilters();
   const shown=Math.min(list.length,(currentGamePage+1)*G4M3S_PAGE_SIZE);
   $('#game-count').textContent=`${list.length} G4M3S${shown<list.length?' · SHOWING '+shown:''}`;
   $('#game-grid').innerHTML=list.length?list.slice(0,shown).map(cardTemplate).join('')+(shown<list.length?`<button class="play-btn load-more-games" data-load-more>LOAD MORE · ${list.length-shown} LEFT</button>`:''):'<div class="empty">NO G4M3S FOUND. TRY ANOTHER SEARCH.</div>';
 }
 let currentGame=null;
-let proxyTabs=[{id:1,title:'New Tab',address:''}];
+let proxyTabs=[{id:1,title:'New Tab',address:'',frame:null,frameElement:null}];
 let activeProxyTabId=1;
 let nextProxyTabId=2;
+let scramjetController=null;
+let scramjetBootPromise=null;
+let scramjetKeepalive=null;
+let scramjetTransportKind=null;
+let ultravioletBootPromise=null;
+let ultravioletConnection=null;
+let ultravioletTransportKind=null;
+function selectedTransportKind(){return userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl'}
+function transportEndpoint(engine,kind){
+  if(engine==='ultraviolet')return kind==='epoxy'?'/uv-epoxy/index.mjs':'/uv-libcurl/index.mjs';
+  return kind==='epoxy'?'/epoxy/index.mjs':'/libcurl/index.mjs';
+}
+function wispEndpoint(){const scheme=location.protocol==='https:'?'wss:':'ws:';return `${scheme}//${location.host}/wisp/`}
+function loadScramjetScript(src){
+  return new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    script.src=src;
+    script.onload=resolve;
+    script.onerror=()=>{script.remove();reject(new Error(`Could not load ${src}`));};
+    document.head.append(script);
+  });
+}
+async function getProxyServiceWorker(){
+  if(!window.isSecureContext||!('serviceWorker' in navigator))throw new Error('Proxy engines need localhost or an HTTPS site.');
+  const registration=await navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'});
+  await navigator.serviceWorker.ready;
+  await registration.update();
+  let updatingWorker=registration.installing||registration.waiting;
+  if(updatingWorker){
+    await new Promise((resolve,reject)=>{
+      const timeout=setTimeout(()=>reject(new Error('The updated proxy service worker did not activate in time. Reload Silverite and retry.')),15000);
+      const checkState=()=>{
+        if(updatingWorker.state==='activated'){clearTimeout(timeout);resolve();}
+        else if(updatingWorker.state==='redundant'){clearTimeout(timeout);reject(new Error('The updated proxy service worker could not activate. Reload Silverite and retry.'));}
+      };
+      updatingWorker.addEventListener('statechange',checkState);
+      checkState();
+    });
+  }
+  const activeWorker=registration.active;
+  if(!navigator.serviceWorker.controller||navigator.serviceWorker.controller!==activeWorker){
+    await new Promise((resolve,reject)=>{
+      const timeout=setTimeout(()=>reject(new Error('The proxy service worker did not take control. Reload Silverite and retry.')),15000);
+      const checkController=()=>{
+        if(navigator.serviceWorker.controller===registration.active){clearTimeout(timeout);resolve();}
+      };
+      navigator.serviceWorker.addEventListener('controllerchange',checkController,{once:true});
+      checkController();
+    });
+  }
+  const worker=navigator.serviceWorker.controller||registration.active;
+  if(!worker)throw new Error('The proxy service worker is not active.');
+  return worker;
+}
+async function createScramjetTransport(kind){
+  const {default:Transport}=await import(transportEndpoint('scramjet',kind));
+  return new Transport({wisp:wispEndpoint()});
+}
+async function initializeScramjet(){
+  const transportKind=selectedTransportKind();
+  if(scramjetController){
+    if(scramjetTransportKind!==transportKind){await scramjetController.setTransport(await createScramjetTransport(transportKind));scramjetTransportKind=transportKind;}
+    return scramjetController;
+  }
+  if(scramjetBootPromise)return scramjetBootPromise;
+  scramjetBootPromise=(async()=>{
+    const serviceworker=await getProxyServiceWorker();
+    for(const src of ['/scram/scramjet.js','/controller/controller.api.js','/utils/scramjet-utils.js'])await loadScramjetScript(src);
+    const transport=await createScramjetTransport(transportKind);
+    const api=window.$scramjetController;
+    if(!api?.Controller||!window.$scramjetUtils?.UrlWatcherPlugin)throw new Error('Scramjet runtime scripts did not initialize.');
+    const controller=new api.Controller({
+      serviceworker,
+      transport,
+      config:{scramjetPath:'/scram/scramjet.js',wasmPath:'/scram/scramjet.wasm',injectPath:'/controller/controller.inject.js'}
+    });
+    await controller.wait();
+    if(!scramjetKeepalive)scramjetKeepalive=setInterval(()=>navigator.serviceWorker.controller?.postMessage('keepalive'),15000);
+    scramjetController=controller;
+    scramjetTransportKind=transportKind;
+    return controller;
+  })().catch(error=>{scramjetBootPromise=null;throw error;});
+  return scramjetBootPromise;
+}
+async function initializeUltraviolet(){
+  const transportKind=selectedTransportKind();
+  if(ultravioletConnection){
+    if(ultravioletTransportKind!==transportKind){await ultravioletConnection.setTransport(transportEndpoint('ultraviolet',transportKind),[{wisp:wispEndpoint()}]);ultravioletTransportKind=transportKind;}
+    return ultravioletConnection;
+  }
+  if(ultravioletBootPromise)return ultravioletBootPromise;
+  ultravioletBootPromise=(async()=>{
+    await getProxyServiceWorker();
+    for(const src of ['/uv/uv.bundle.js','/silverite-uv.config.js','/baremux/index.js'])await loadScramjetScript(src);
+    const BareMuxConnection=window.BareMux?.BareMuxConnection;
+    if(!BareMuxConnection)throw new Error('Ultraviolet transport manager did not load.');
+    const connection=new BareMuxConnection('/baremux/worker.js');
+    await connection.setTransport(transportEndpoint('ultraviolet',transportKind),[{wisp:wispEndpoint()}]);
+    ultravioletConnection=connection;
+    ultravioletTransportKind=transportKind;
+    return connection;
+  })().catch(error=>{ultravioletBootPromise=null;throw error;});
+  return ultravioletBootPromise;
+}
+function updateProxyTabAddress(tab,url){
+  tab.address=String(url||'');
+  try{tab.title=new URL(tab.address).hostname.replace(/^www\./,'')||'New Tab'}catch(error){tab.title='New Tab';}
+  if(tab.id===activeProxyTabId)$('#address-bar').value=tab.address;
+  renderProxyTabs();
+}
+function updateProxySurface(){
+  const view=$('#view-proxy');
+  const active=proxyTabs.find(tab=>tab.id===activeProxyTabId);
+  const browsing=Boolean(active?.frameElement&&active.address);
+  view.classList.toggle('is-browsing',browsing);
+  for(const tab of proxyTabs)tab.frameElement?.classList.toggle('is-active',browsing&&tab.id===activeProxyTabId);
+}
+async function ensureProxyFrame(tab){
+  const engine=userSettings.defaultEngine==='ultraviolet'?'ultraviolet':'scramjet';
+  if(tab.frame&&tab.engine===engine)return tab.frame;
+  if(tab.frame)destroyProxyFrame(tab);
+  if(engine==='ultraviolet')await initializeUltraviolet();
+  const controller=engine==='scramjet'?await initializeScramjet():null;
+  const iframe=document.createElement('iframe');
+  iframe.className='proxy-frame';
+  iframe.title=`Proxied page: ${tab.title}`;
+  iframe.setAttribute('sandbox','allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock');
+  iframe.setAttribute('allow','fullscreen; autoplay; gamepad; clipboard-read; clipboard-write');
+  $('#proxy-frame-container').append(iframe);
+  tab.frameElement=iframe;
+  tab.engine=engine;
+  if(engine==='scramjet'){
+    const utils=window.$scramjetUtils;
+    tab.frame=controller.createFrame(iframe,{plugins:[new utils.UrlWatcherPlugin(url=>updateProxyTabAddress(tab,url))]});
+  }else{
+    const config=window.__uv$config;
+    tab.frame={
+      element:iframe,
+      go:url=>{iframe.src=`${config.prefix}${config.encodeUrl(url)}`;},
+      back:()=>iframe.contentWindow?.history.back(),
+      forward:()=>iframe.contentWindow?.history.forward(),
+      reload:()=>iframe.contentWindow?.location.reload()
+    };
+  }
+  updateProxySurface();
+  return tab.frame;
+}
+function destroyProxyFrame(tab){
+  if(tab.urlMonitor)clearInterval(tab.urlMonitor);
+  if(tab.frame&&tab.engine==='scramjet'&&scramjetController){
+    const index=scramjetController.frames.indexOf(tab.frame);
+    if(index!==-1)scramjetController.frames.splice(index,1);
+  }
+  tab.frameElement?.remove();
+  tab.frame=null;
+  tab.frameElement=null;
+  tab.engine=null;
+}
+async function navigateProxy(url){
+  const tab=proxyTabs.find(item=>item.id===activeProxyTabId);
+  if(!tab)return;
+  go('proxy');
+  updateProxyTabAddress(tab,url);
+  try{
+    const frame=await ensureProxyFrame(tab);
+    updateProxySurface();
+    frame.go(url);
+  }catch(error){
+    console.error('Scramjet could not start:',error);
+    notify(`Scramjet could not start: ${error.message||'check the browser console for details.'}`);
+  }
+}
 function openGame(name){
   const game=g4m3s.find(g=>g.name===name);if(!game)return;
   if(game.launchMode==='external'){
@@ -622,16 +845,14 @@ function loadProxyTabFavicons(){
   const list=$('#proxy-tab-list');
   list.querySelectorAll('[data-tab-favicon]').forEach(image=>{
     const tab=proxyTabs.find(item=>item.id===Number(image.dataset.tabFavicon));
-    const fallback=image.nextElementSibling;
     const candidates=tab?tabFaviconCandidates(tab.address):[];
     let index=0;
     image.hidden=true;
-    if(fallback)fallback.hidden=false;
     const tryNext=()=>{
-      if(index>=candidates.length){image.hidden=true;if(fallback)fallback.hidden=false;return;}
+      if(index>=candidates.length){image.hidden=true;return;}
       image.src=candidates[index++];
     };
-    image.onload=()=>{image.hidden=false;if(fallback)fallback.hidden=true;};
+    image.onload=()=>{image.hidden=false;};
     image.onerror=tryNext;
     if(candidates.length)tryNext();
   });
@@ -641,14 +862,15 @@ function renderProxyTabs(){
   list.innerHTML=proxyTabs.map(tab=>`<div class="proxy-tab-item">
     <button class="rail-btn proxy-tab ${tab.id===activeProxyTabId?'active':''}" type="button" data-proxy-tab="${tab.id}" role="tab" aria-selected="${tab.id===activeProxyTabId?'true':'false'}" title="${escapeHTML(tab.title)}" aria-label="${escapeHTML(tab.title)}">
       <img class="tab-favicon" data-tab-favicon="${tab.id}" alt="" hidden referrerpolicy="no-referrer">
-      <svg class="icon tab-default-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4.5" ry="9"/><path d="M3 12h18"/></svg>
+      ${tab.address?'':`<svg class="icon tab-default-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4.5" ry="9"/><path d="M3 12h18"/></svg>`}
     </button>
     ${proxyTabs.length>1?`<button class="tab-close" type="button" data-close-proxy-tab="${tab.id}" title="Close tab" aria-label="Close ${escapeHTML(tab.title)}"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>`:''}
   </div>`).join('');
   loadProxyTabFavicons();
+  updateProxySurface();
 }
 function addProxyTab(){
-  const tab={id:nextProxyTabId++,title:'New Tab',address:''};
+  const tab={id:nextProxyTabId++,title:'New Tab',address:'',frame:null,frameElement:null};
   proxyTabs.push(tab);activeProxyTabId=tab.id;
   $('#address-bar').value='';$('#proxy-home-search').value='';
   renderProxyTabs();go('proxy');
@@ -659,14 +881,14 @@ function activateProxyTab(id){
   renderProxyTabs();go('proxy');
 }
 function closeProxyTab(id){
-  if(proxyTabs.length===1){const only=proxyTabs[0];only.title='New Tab';only.address='';activeProxyTabId=only.id;$('#address-bar').value='';$('#proxy-home-search').value='';renderProxyTabs();return;}
+  if(proxyTabs.length===1){const only=proxyTabs[0];destroyProxyFrame(only);only.title='New Tab';only.address='';activeProxyTabId=only.id;$('#address-bar').value='';$('#proxy-home-search').value='';renderProxyTabs();go('proxy');return;}
   const index=proxyTabs.findIndex(item=>item.id===id);if(index<0)return;
-  proxyTabs.splice(index,1);
+  const [removed]=proxyTabs.splice(index,1);destroyProxyFrame(removed);
   if(activeProxyTabId===id){const next=proxyTabs[Math.max(0,index-1)];activeProxyTabId=next.id;$('#address-bar').value=next.address||'';$('#proxy-home-search').value='';}
   renderProxyTabs();go('proxy');
 }
 function isURL(text){return /^(https?:\/\/|[\w-]+\.[a-z]{2,})(\/|$)/i.test(text.trim())}
-function openSearchOrURL(value){const text=value.trim();if(!text)return;if(isURL(text)){const url=text.match(/^https?:\/\//i)?text:`https://${text}`;$('#address-bar').value=url;const tab=proxyTabs.find(item=>item.id===activeProxyTabId);if(tab){tab.address=url;try{tab.title=new URL(url).hostname||'New Tab'}catch(e){tab.title='New Tab'}renderProxyTabs();}notify('Address entered. Ultraviolet browsing needs its backend connected.')}else{window.open(`https://duckduckgo.com/?q=${encodeURIComponent(text)}`,'_blank','noopener,noreferrer');}}
+function openSearchOrURL(value){const text=value.trim();if(!text)return;const url=isURL(text)?(text.match(/^https?:\/\//i)?text:`https://${text}`):`https://duckduckgo.com/?q=${encodeURIComponent(text)}`;navigateProxy(url);}
 function updateClock(){const now=new Date();$('#clock').textContent=now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
 function persistSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(userSettings))}catch(e){notify('Could not save preferences in this browser.')}}
 function imageFromSource(src){
@@ -728,28 +950,82 @@ function applySettings(){
     root.style.removeProperty('--custom-cursor');
   }
   document.body.classList.toggle('hide-grid',!userSettings.backgroundGrid);
+  userSettings.backgroundStyle=['grid','waves','circles','dots','fluid','image','off'].includes(userSettings.backgroundStyle)?userSettings.backgroundStyle:(userSettings.backgroundGrid?'grid':'off');
+  root.dataset.background=userSettings.backgroundStyle;
+  root.dataset.motion=userSettings.reduceMotion?'reduced':'full';
+  if(userSettings.backgroundImage)root.style.setProperty('--custom-background-image',`url("${userSettings.backgroundImage}")`);
+  else root.style.removeProperty('--custom-background-image');
   document.body.classList.toggle('hide-clock',!userSettings.showClock);
   if(!userSettings.cursorGlow||strength===0)document.body.classList.remove('cursor-glow-active');
   $('#reduce-motion').checked=!!userSettings.reduceMotion;
   $('#confirm-close-game').checked=!!userSettings.confirmClose;
-  $('#default-engine').value=userSettings.defaultEngine||'ultraviolet';
+  userSettings.defaultEngine=userSettings.defaultEngine==='ultraviolet'?'ultraviolet':'scramjet';
+  userSettings.defaultTransport=userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl';
+  $('#default-engine').value=userSettings.defaultEngine;
+  $('#default-transport').value=userSettings.defaultTransport;
   $('#cursor-style').value=userSettings.cursorStyle||'default';
   renderCursorCustomizer();
   $('#cursor-glow-enabled').checked=!!userSettings.cursorGlow;
   $('#cursor-glow-intensity').value=String(userSettings.glowIntensity);
   $('#cursor-glow-value').textContent=`${userSettings.glowIntensity}%`;
-  $('#background-grid').checked=!!userSettings.backgroundGrid;
+  $('#background-style').value=userSettings.backgroundStyle;
   $('#show-clock').checked=!!userSettings.showClock;
   $$('.accent-swatch').forEach(button=>button.classList.toggle('active',button.dataset.accent.toLowerCase()===userSettings.accent.toLowerCase()));
   document.documentElement.style.scrollBehavior=userSettings.reduceMotion?'auto':'smooth';
 }
 function updateSetting(key,value,{quiet=false}={}){userSettings[key]=value;persistSettings();applySettings();if(!quiet)notify('Preference saved.');}
 function resetSettings(){userSettings={...DEFAULT_SETTINGS};persistSettings();applySettings();notify('Silverite settings restored.');}
+
+async function loadChangelogs(){
+  const list=$('#changelog-list');
+  const toggle=$('#changelog-older-toggle');
+  try{
+    const response=await fetch('/api/changelogs',{cache:'no-store'});
+    if(!response.ok)throw new Error(`HTTP ${response.status}`);
+    const entries=await response.json();
+    if(!Array.isArray(entries))throw new Error('Invalid changelog data');
+    entries.sort((a,b)=>Date.parse(b.date||'')-Date.parse(a.date||''));
+    list.replaceChildren();
+    if(!entries.length){
+      const empty=document.createElement('div');empty.className='changelog-empty';empty.textContent='No changelogs published yet. Add entries to data/changelogs.json on the server.';list.append(empty);toggle.hidden=true;return;
+    }
+    entries.forEach((entry,index)=>{
+      const article=document.createElement('article');article.className='changelog-entry';article.hidden=index>0;
+      const heading=document.createElement('div');heading.className='changelog-entry-heading';
+      const titlebar=document.createElement('div');titlebar.className='changelog-entry-titlebar';
+      const title=document.createElement('h2');title.textContent=`Version ${entry.version||'Unversioned'}`;titlebar.append(title);
+      const ranks={regular:{label:'Regular update',className:'regular'},hotfix:{label:'Bug fix / hotfix',className:'hotfix'},major:{label:'Major update',className:'major'},games:{label:'Game additions',className:'games'}};
+      const rank=ranks[entry.type]||ranks.regular;const badge=document.createElement('span');badge.className=`changelog-rank changelog-rank--${rank.className}`;badge.textContent=rank.label;titlebar.append(badge);heading.append(titlebar);
+      if(entry.date){const date=document.createElement('time');date.className='changelog-date';date.dateTime=entry.date;date.textContent=entry.date;heading.append(date);}
+      article.append(heading);
+      if(entry.title){const subtitle=document.createElement('p');subtitle.className='changelog-entry-title';subtitle.textContent=entry.title;article.append(subtitle);}
+      const changes=Array.isArray(entry.changes)?entry.changes:[entry.changes].filter(Boolean);
+      if(changes.length){const items=document.createElement('ul');items.className='changelog-changes';changes.forEach(change=>{const item=document.createElement('li');item.textContent=String(change);items.append(item);});article.append(items);}
+      list.append(article);
+    });
+    const noOlder=document.createElement('div');noOlder.className='changelog-empty changelog-no-older';noOlder.textContent='No older changelogs published yet.';noOlder.hidden=true;list.append(noOlder);
+    toggle.hidden=false;
+    toggle.setAttribute('aria-expanded','false');toggle.textContent='View old changelogs';
+  }catch(error){
+    console.error('Could not load changelogs:',error);
+    list.replaceChildren();const empty=document.createElement('div');empty.className='changelog-empty';empty.textContent='Could not load changelogs. Make sure Silverite is running with npm start.';list.append(empty);toggle.hidden=true;
+  }
+}
+$('#changelog-older-toggle').addEventListener('click',e=>{
+  const expanded=e.currentTarget.getAttribute('aria-expanded')==='true';
+  e.currentTarget.setAttribute('aria-expanded',String(!expanded));
+  e.currentTarget.textContent=expanded?'View old changelogs':'Hide old changelogs';
+  const oldEntries=$$('#changelog-list .changelog-entry').slice(1);
+  oldEntries.forEach(entry=>{entry.hidden=expanded;});
+  const noOlder=$('#changelog-list .changelog-no-older');if(noOlder)noOlder.hidden=expanded||oldEntries.length>0;
+});
+loadChangelogs();
 $$('[data-view]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.view)));
 $('#new-proxy-tab').addEventListener('click',addProxyTab);
 $('#proxy-tab-list').addEventListener('click',e=>{const close=e.target.closest('[data-close-proxy-tab]');if(close){closeProxyTab(Number(close.dataset.closeProxyTab));return;}const tab=e.target.closest('[data-proxy-tab]');if(tab)activateProxyTab(Number(tab.dataset.proxyTab));});
 $('#address-form').addEventListener('submit',e=>{e.preventDefault();openSearchOrURL($('#address-bar').value)});
 $('#proxy-home-search-form').addEventListener('submit',e=>{e.preventDefault();openSearchOrURL($('#proxy-home-search').value)});
+$$('[data-proxy-url]').forEach(b=>b.addEventListener('click',()=>navigateProxy(b.dataset.proxyUrl)));
 $$('[data-external]').forEach(b=>b.addEventListener('click',()=>window.open(b.dataset.external,'_blank','noopener,noreferrer')));
 $('#g4m3s-search-form').addEventListener('submit',e=>e.preventDefault());
 $('#game-search').addEventListener('input',()=>{currentGamePage=0;renderg4m3s();});
@@ -814,9 +1090,50 @@ $('#clear-custom-cursor').addEventListener('click',()=>{
 $('#cursor-glow-enabled').addEventListener('change',e=>updateSetting('cursorGlow',e.target.checked));
 $('#cursor-glow-intensity').addEventListener('input',e=>{userSettings.glowIntensity=Number(e.target.value);$('#cursor-glow-value').textContent=`${userSettings.glowIntensity}%`;applySettings()});
 $('#cursor-glow-intensity').addEventListener('change',()=>{persistSettings();notify('Glow intensity saved.')});
-$('#background-grid').addEventListener('change',e=>updateSetting('backgroundGrid',e.target.checked));
+$('#background-style').addEventListener('change',e=>{
+  if(e.target.value==='image'&&!userSettings.backgroundImage){$('#background-image-upload').click();e.target.value=userSettings.backgroundStyle;return;}
+  userSettings.backgroundGrid=e.target.value!=='off';
+  updateSetting('backgroundStyle',e.target.value);
+});
+$('#background-image-upload').addEventListener('change',e=>{
+  const file=e.target.files?.[0];if(!file)return;
+  if(!file.type.startsWith('image/')){notify('Choose an image file.');e.target.value='';return;}
+  const reader=new FileReader();
+  reader.onerror=()=>notify('Could not read that image.');
+  reader.onload=()=>{
+    const image=new Image();
+    image.onerror=()=>notify('Could not load that image.');
+    image.onload=()=>{
+      const scale=Math.min(1,1600/image.naturalWidth,1000/image.naturalHeight);
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));
+      const context=canvas.getContext('2d');context.drawImage(image,0,0,canvas.width,canvas.height);
+      userSettings.backgroundImage=canvas.toDataURL('image/jpeg',.82);
+      userSettings.backgroundStyle='image';userSettings.backgroundGrid=true;persistSettings();applySettings();notify('Background image saved.');
+    };
+    image.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+});
+$('#clear-background-image').addEventListener('click',()=>{
+  userSettings.backgroundImage='';if(userSettings.backgroundStyle==='image')userSettings.backgroundStyle='grid';
+  userSettings.backgroundGrid=true;$('#background-image-upload').value='';persistSettings();applySettings();notify('Background image removed.');
+});
 $('#show-clock').addEventListener('change',e=>updateSetting('showClock',e.target.checked));
-$('#default-engine').addEventListener('change',e=>{updateSetting('defaultEngine',e.target.value);notify('Default engine preference saved. A matching backend still needs to be configured.')});
+$('#default-engine').addEventListener('change',e=>{
+  updateSetting('defaultEngine',e.target.value);
+  const tab=proxyTabs.find(item=>item.id===activeProxyTabId);
+  if(tab?.address){navigateProxy(tab.address);return;}
+  notify(`${e.target.selectedOptions[0].text} selected for the next page.`);
+});
+$('#default-transport').addEventListener('change',e=>{
+  updateSetting('defaultTransport',e.target.value);
+  const initializedEngine=userSettings.defaultEngine==='ultraviolet'?Boolean(ultravioletConnection):Boolean(scramjetController);
+  if(initializedEngine){
+    const engine=userSettings.defaultEngine;
+    const changed=engine==='ultraviolet'?initializeUltraviolet():initializeScramjet();
+    changed.then(()=>notify(`${e.target.selectedOptions[0].text} transport selected.`)).catch(error=>notify(`Could not switch transport: ${error.message}`));
+  }else notify(`${e.target.selectedOptions[0].text} transport will be used on the next page.`);
+});
 $('#reduce-motion').addEventListener('change',e=>updateSetting('reduceMotion',e.target.checked,{quiet:true}));
 $('#confirm-close-game').addEventListener('change',e=>updateSetting('confirmClose',e.target.checked));
 $('#reset-settings').addEventListener('click',resetSettings);
@@ -838,9 +1155,9 @@ if('IntersectionObserver' in window){
   $$('.settings-section').forEach(section=>settingsObserver.observe(section));
 }
 
-$('#back-btn').addEventListener('click',()=>{if(activeView==='player')closeGame();else if(activeView!=='proxy')go('proxy');else notify('You are already on the proxy page.')});
-$('#forward-btn').addEventListener('click',()=>notify('No forward page in this Silverite session.'));
-$('#reload-btn').addEventListener('click',()=>{if(activeView==='g4m3s')renderg4m3s();if(activeView==='proxy')updateClock();notify('Silverite refreshed.')});
+$('#back-btn').addEventListener('click',()=>{if(activeView==='player'){closeGame();return;}if(activeView!=='proxy'){go('proxy');return;}proxyTabs.find(tab=>tab.id===activeProxyTabId)?.frame?.back();});
+$('#forward-btn').addEventListener('click',()=>{if(activeView==='proxy')proxyTabs.find(tab=>tab.id===activeProxyTabId)?.frame?.forward();});
+$('#reload-btn').addEventListener('click',()=>{if(activeView==='proxy'){const tab=proxyTabs.find(item=>item.id===activeProxyTabId);if(tab?.frame){tab.frame.reload();return;}updateClock();return;}if(activeView==='g4m3s')renderg4m3s();notify('Silverite refreshed.')});
 $('#toggle-left').addEventListener('click',()=>{const rail=$('#left-rail');rail.classList.toggle('hidden');document.querySelector('.workspace').classList.toggle('left-hidden',rail.classList.contains('hidden'));});
 $('#address-bar').addEventListener('input',()=>{const tab=proxyTabs.find(item=>item.id===activeProxyTabId);if(tab)tab.address=$('#address-bar').value;});
 $('#fullscreen-btn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
@@ -876,15 +1193,32 @@ loadExternalGameLibraries().finally(()=>{
 // The loader is a short visual boot sequence. The listed filenames label each startup phase.
 (async function runLoader(){
   const files=['silverite-logo.png','interface.html','settings','proxy workspace','g4m3s library'];
+  const loader=$('#silverite-loader');
+  const status=$('#loader-status');
+  const file=$('#loader-file');
   for(let i=0;i<files.length;i++){
-    $('#loader-status').textContent=`loading.. ${i+1}/${files.length}`;
-    $('#loader-file').textContent=files[i];
+    status.classList.add('is-changing');
+    file.classList.add('is-changing');
+    await new Promise(requestAnimationFrame);
+    status.textContent=`loading.. ${i+1}/${files.length}`;
+    file.textContent=files[i];
+    requestAnimationFrame(()=>{status.classList.remove('is-changing');file.classList.remove('is-changing');});
     $('#loader-fill').style.width=`${((i+1)/files.length)*100}%`;
-    await new Promise(resolve=>setTimeout(resolve,145));
+    await new Promise(resolve=>setTimeout(resolve,205));
   }
-  await new Promise(resolve=>setTimeout(resolve,180));
-  $('#silverite-loader').classList.add('loader-done');
-  setTimeout(()=>$('#silverite-loader')?.remove(),260);
+  if(document.readyState!=='complete')await new Promise(resolve=>window.addEventListener('load',resolve,{once:true}));
+  status.classList.add('is-changing');
+  file.classList.add('is-changing');
+  await new Promise(requestAnimationFrame);
+  status.textContent='READY';
+  file.textContent='Silverite is ready';
+  $('#loader-fill').style.width='100%';
+  requestAnimationFrame(()=>{status.classList.remove('is-changing');file.classList.remove('is-changing');});
+  loader.classList.add('loader-finish');
+  const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  await new Promise(resolve=>setTimeout(resolve,reducedMotion?80:850));
+  loader.classList.add('loader-done');
+  setTimeout(()=>$('#silverite-loader')?.remove(),680);
 })();
 
 // Soft background glow follows the mouse without intercepting UI input.

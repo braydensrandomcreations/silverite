@@ -99,17 +99,18 @@
         </form>
         <p class="home-message" id="home-message" aria-live="polite"></p>
         <div class="social-row">
-          <button class="social-btn" data-external="https://www.tiktok.com" title="TikTok"><svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="none" d="M19.7 8.1a7.3 7.3 0 0 1-4.5-1.6v7.1a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.2.1v3.1a2.6 2.6 0 1 0 1.8 2.4V2.5h3a4.6 4.6 0 0 0 4.1 4.2v1.4Z"/></svg></button>
-          <button class="social-btn" data-external="https://www.youtube.com" title="YouTube"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" ><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></svg></button>
-          <button class="social-btn" data-external="https://discord.com" title="Discord"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" ><path d="M7 7.5c3.3-1.5 6.7-1.5 10 0l1.2 8.2c-2 1.8-3.6 2.3-5.2 2.5l-1-1.4-1 1.4c-1.6-.2-3.2-.7-5.2-2.5L7 7.5Z"/><path d="M9 12h.01M15 12h.01"/></svg></button>
+          <button class="social-btn" data-proxy-url="https://www.tiktok.com" title="TikTok"><svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="none" d="M19.7 8.1a7.3 7.3 0 0 1-4.5-1.6v7.1a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.2.1v3.1a2.6 2.6 0 1 0 1.8 2.4V2.5h3a4.6 4.6 0 0 0 4.1 4.2v1.4Z"/></svg></button>
+          <button class="social-btn" data-proxy-url="https://www.youtube.com" title="YouTube"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" ><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></svg></button>
+          <button class="social-btn" data-external="https://discord.com" title="Discord" aria-label="Discord"><svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="none" d="M19.73 5.23A18.6 18.6 0 0 0 15.2 3.8l-.57 1.16a16.2 16.2 0 0 0-5.26 0L8.8 3.8a18.6 18.6 0 0 0-4.53 1.43C1.4 9.53.63 13.52 1.02 17.45a18.8 18.8 0 0 0 5.56 2.8l1.2-1.96a12.1 12.1 0 0 1-1.89-.91l.46-.36a13.3 13.3 0 0 0 11.3 0l.46.36a12.1 12.1 0 0 1-1.89.91l1.2 1.96a18.8 18.8 0 0 0 5.56-2.8c.46-4.56-.78-8.52-3.25-12.22ZM8.6 14.97c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2.02.99 2 2.2c0 1.21-.89 2.2-2 2.2Zm6.8 0c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2.02.99 2 2.2c0 1.21-.88 2.2-2 2.2Z"/></svg></button>
         </div>
       </div>
+      <div class="proxy-frame-container" id="proxy-frame-container" aria-label="Proxied pages"></div>
     </section>
 
     <section class="view standard-view settings-view" id="view-settings">
       <div class="settings-page-heading">
         <div class="settings-heading-copy">
-          <div class="eyebrow">Control room</div>
+          <div class="eyebrow">Version 0.12.11.3.2</div>
           <h1>Settings.</h1>
           <p class="lede">All of your Silverite preferences, clearly organized in one place.</p>
         </div>
@@ -122,10 +123,6 @@
           <button class="settings-nav-button active" type="button" data-settings-target="appearance" aria-current="true">
             <span class="settings-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.2a2.3 2.3 0 0 0 1.5-4c-.6-.5-.2-1.5.6-1.5H17a4 4 0 0 0 4-4c0-4.7-4-8.5-9-8.5Z"/><circle cx="7.5" cy="10" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="15" cy="8" r="1"/></svg></span>
             <span class="settings-nav-label">Appearance</span><span class="settings-nav-chevron">›</span>
-          </button>
-          <button class="settings-nav-button" type="button" data-settings-target="cursor" aria-current="false">
-            <span class="settings-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 3 14 10-7 1-3 7L5 3Z"/><path d="m13 15 4 5"/></svg></span>
-            <span class="settings-nav-label">Cursor &amp; effects</span><span class="settings-nav-chevron">›</span>
           </button>
           <button class="settings-nav-button" type="button" data-settings-target="interface" aria-current="false">
             <span class="settings-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
@@ -162,15 +159,13 @@
                 <div class="settings-current-accent">Choose a swatch to update the whole interface</div>
               </div>
               <div class="settings-option-row">
-                <div class="settings-option-copy"><b>Background grid</b><small>Show the subtle pixel grid behind each page.</small></div>
-                <div class="settings-option-control"><label class="switch"><input id="background-grid" type="checkbox"><span></span></label></div>
+                <div class="settings-option-copy"><b>Background style</b><small>Choose the animated backdrop behind each page.</small></div>
+                <div class="settings-option-control"><select class="engine-select" id="background-style"><option value="grid">Grid</option><option value="waves">Waves</option><option value="circles">Circles</option><option value="dots">Dynamic dots</option><option value="fluid">Fluid</option><option value="image">Image</option><option value="off">Off</option></select></div>
               </div>
-            </div>
-          </section>
-
-          <section class="settings-section" id="settings-cursor" aria-labelledby="settings-cursor-title">
-            <div class="settings-section-heading"><span class="settings-section-number">02</span><div><h2 id="settings-cursor-title">Cursor &amp; effects</h2><p>Control the pointer and the glow that follows it.</p></div></div>
-            <div class="settings-panel">
+              <div class="settings-option-row">
+                <div class="settings-option-copy"><b>Background image</b><small>Upload an image for the Image background style.</small></div>
+                <div class="settings-option-control"><label class="background-image-upload" for="background-image-upload">Choose image</label><input id="background-image-upload" class="background-image-file" type="file" accept="image/*"><button class="background-image-clear" id="clear-background-image" type="button">Remove</button></div>
+              </div>
               <div class="settings-option-row">
                 <div class="settings-option-copy"><b>Custom cursor</b><small>Choose how the pointer looks around Silverite.</small></div>
                 <div class="settings-option-control"><select class="engine-select" id="cursor-style"><option value="default">Default</option><option value="pixel">Pixel arrow</option><option value="crosshair">Crosshair</option><option value="custom">Custom image</option></select></div>
@@ -233,8 +228,9 @@
           <section class="settings-section" id="settings-proxy" aria-labelledby="settings-proxy-title">
             <div class="settings-section-heading"><span class="settings-section-number">04</span><div><h2 id="settings-proxy-title">Proxy</h2><p>Choose which browsing engine Silverite should prefer.</p></div></div>
             <div class="settings-panel">
-              <div class="settings-option-row"><div class="settings-option-copy"><b>Default proxy engine</b><small>Ultraviolet remains selected until another backend is configured.</small></div><div class="settings-option-control"><select class="engine-select" id="default-engine"><option value="ultraviolet">Ultraviolet</option><option value="scramjet">Scramjet</option><option value="epoxy">Epoxy</option></select></div></div>
-              <div class="settings-inline-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></svg><span>Changing this preference does not install or connect an engine backend.</span></div>
+              <div class="settings-option-row"><div class="settings-option-copy"><b>Proxy engine</b><small>Scramjet is recommended. Ultraviolet is a legacy, unmaintained compatibility option.</small></div><div class="settings-option-control"><select class="engine-select" id="default-engine"><option value="scramjet">Scramjet</option><option value="ultraviolet">Ultraviolet</option></select></div></div>
+              <div class="settings-option-row"><div class="settings-option-copy"><b>Transport</b><small>Switch between Libcurl and Epoxy if a site behaves differently.</small></div><div class="settings-option-control"><select class="engine-select" id="default-transport"><option value="libcurl">Libcurl</option><option value="epoxy">Epoxy</option></select></div></div>
+              <div class="settings-inline-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></svg><span>Run Silverite with <code>npm start</code> and open it at <code>http://localhost:8080</code> to use the proxy.</span></div>
             </div>
           </section>
 
@@ -254,93 +250,11 @@
 
     <section class="view standard-view changelog-view" id="view-changelog">
       <div class="changelog-wrap">
-        <div class="changelog-heading">
-          <div>
-            <div class="eyebrow">The build history</div>
-            <h1>Changelog.</h1>
-            <p class="lede">New stuff, fixes, and little quality-of-life upgrades made to Silverite.</p>
-          </div>
-          <div class="changelog-current"><span>CURRENT BUILD</span><strong>ver.0.12.11.3.2</strong><small>November 3, 2026</small></div>
-        </div>
-        <div class="changelog-list">
-          <article class="changelog-entry latest">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><span class="changelog-badge">LATEST</span><time datetime="2026-11-03">November 3, 2026</time></div><span class="changelog-version">0.12.11.3.2</span></div>
-            <h2>Player menu and source layout</h2>
-            <p>Moved the player title and status beside a compact control toolbar, refined the player frame and footer, and separated the app into HTML, CSS, JavaScript, and an assets folder. Restored the background grid’s corner glow and vignette.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><span class="changelog-badge">PREVIOUS</span><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>Library source filters</h2>
-            <p>Added compact library icon filters above the game search. The original game set is labeled UBZone, with separate filters for GN-MATH, UGS, Seraph, FreezeNova, and custom libraries when present.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><span class="changelog-badge">PREVIOUS</span><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>More public game libraries</h2>
-            <p>Added source-aware game catalogs from GN-MATH, UGS, and Seraph, a FreezeNova directory shortcut plus verified game links, and paged rendering to keep the larger library responsive. Imported libraries stay out of the default preload to avoid a very large first download.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><span class="changelog-badge">PREVIOUS</span><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>Settings icon cleanup</h2>
-            <p>Removed an unintended square border and background from the Settings gear icon in the right navigation rail.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>Changelog page</h2>
-            <p>Added an in-site update history so you can see what changed between Silverite builds.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>Tab favicons</h2>
-            <p>Proxy tabs now try to show the favicon of the website they are visiting, with fallback icons when a favicon cannot be loaded.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-30">October 30, 2026</time></div><span class="changelog-version">0.26.10.30.7</span></div>
-            <h2>Browser icon cleanup</h2>
-            <p>Replaced the odd-looking browser symbol with a cleaner, better-proportioned globe icon.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Random home messages</h2>
-            <p>Added a random message below the home search bar. The message pool is directly editable in the HTML.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Settings navigation moved</h2>
-            <p>Moved the Settings icon near the bottom of the right rail, directly above Fullscreen.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Editable game library</h2>
-            <p>Added a clearly marked configuration section in the HTML for maintaining the game list.</p>
-            <ul><li>Remove built-in games by filename.</li><li>Override a game's display name and thumbnail.</li><li>Add games with a name, game URL, and thumbnail URL.</li><li>Use local relative paths or hosted URLs.</li></ul>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>FNAE and BIGE removals</h2>
-            <p>Removed the FNAE and BIGE entries requested from the game library and its preload list. FNAF and Actual Geometry Dash were kept.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Geometry Dash cleanup</h2>
-            <p>Removed duplicate Geometry Dash listings while keeping the <strong>Actual Geometry Dash</strong> web port.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Friday Night Funkin' library fixes</h2>
-            <p>Updated names and thumbnail matches for the FNF mod entries so their cards are easier to recognize.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Full background preload</h2>
-            <p>Added background preloading for game HTML files and thumbnails, with a live progress counter while the site remains usable.</p>
-          </article>
-          <article class="changelog-entry">
-            <div class="changelog-entry-top"><div class="changelog-entry-meta"><time datetime="2026-10-29">October 29, 2026</time></div><span class="changelog-version">0.26.10.29.10</span></div>
-            <h2>Expanded game library</h2>
-            <p>Imported the requested game collection and image directory, matching available thumbnails to game entries and retaining the existing game player controls.</p>
-          </article>
-        </div>
-        <div class="changelog-footnote">This log records the Silverite updates documented in the project conversation. Some games and thumbnails are loaded from the external repository, so availability can depend on that source.</div>
+        <div class="eyebrow">THE BUILD HISTORY</div>
+        <h1>Changelog.</h1>
+        <p class="lede">New stuff, fixes, and quality-of-life upgrades made to Silverite.</p>
+        <div class="changelog-list" id="changelog-list" aria-live="polite"><div class="changelog-empty">Loading changelogs…</div></div>
+        <button class="changelog-older-toggle" id="changelog-older-toggle" type="button" aria-expanded="false" hidden>View old changelogs</button>
       </div>
     </section>
 
