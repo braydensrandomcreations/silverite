@@ -554,7 +554,7 @@ try{favorites=new Set(JSON.parse(localStorage.getItem('silverite-favorites')||'[
 function notify(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500)}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function cardTemplate(game){
-  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='assets/no-thumbnail.png'}">`;
+  const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png'}">`;
   const source=game.source?`<div class="game-source">${escapeHTML(game.source)}</div>`:'';
   const action=escapeHTML(game.actionLabel||'PLAY');
   return `<article class="game-card" data-game="${safe}"><div class="game-art art-${game.art} has-thumb">${image}<span class="art-glyph thumb-fallback">${escapeHTML(game.glyph||'G')}</span><button class="game-fav ${fav?'favorited':''}" data-fav="${safe}" aria-label="${fav?'Remove from':'Add to'} favorites">${svgIcon('heart',16,'icon',fav)}</button></div><div class="game-name" title="${safe}">${safe}</div>${source}<button class="play-btn" data-play="${safe}">${action}</button></article>`
@@ -563,12 +563,12 @@ const G4M3S_PAGE_SIZE = 96;
 let currentGamePage = 0;
 let selectedGameLibrary = "SILVERITE";
 const GAME_LIBRARY_FILTERS = [
-  {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"assets/icons/silverite.png"},
-  {id:"UBZONE",name:"UBZone",fallback:"U",icon:"assets/icons/ubz.png"},
-  {id:"GN-MATH",name:"GN-MATH",fallback:"π",icon:"assets/icons/gn.png"},
-  {id:"UGS",name:"Ultimate Game Stash",fallback:"UGS",icon:"assets/icons/ugs.png"},
-  {id:"SERAPH",name:"Seraph",fallback:"S",icon:"assets/icons/seraph.png"},
-  {id:"TRUFFLED",name:"Truffled",fallback:"T",icon:"assets/icons/truffled.png"},
+  {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/silverite.png"},
+  {id:"UBZONE",name:"UBZone",fallback:"U",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ubz.png"},
+  {id:"GN-MATH",name:"GN-MATH",fallback:"π",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/gn.png"},
+  {id:"UGS",name:"Ultimate Game Stash",fallback:"UGS",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ugs.png"},
+  {id:"SERAPH",name:"Seraph",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/seraph.png"},
+  {id:"TRUFFLED",name:"Truffled",fallback:"T",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/truffled.png"},
   {id:"CUSTOM",name:"Custom games",fallback:"+",icon:""}
 ];
 function libraryFilterTemplate(filter,count){
@@ -608,6 +608,7 @@ function renderg4m3s(){
   $('#game-grid').innerHTML=list.length?list.slice(0,shown).map(cardTemplate).join('')+(shown<list.length?`<button class="play-btn load-more-games" data-load-more>LOAD MORE · ${list.length-shown} LEFT</button>`:''):'<div class="empty">NO G4M3S FOUND. TRY ANOTHER SEARCH.</div>';
 }
 let currentGame=null;
+let gameLoadToken=0;
 let proxyTabs=[{id:1,title:'New Tab',address:'',frame:null,frameElement:null}];
 let activeProxyTabId=1;
 let nextProxyTabId=2;
@@ -619,11 +620,14 @@ let ultravioletBootPromise=null;
 let ultravioletConnection=null;
 let ultravioletTransportKind=null;
 function selectedTransportKind(){return userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl'}
+const APP_BASE_URL=new URL('.',document.currentScript?.src||location.href);
+function appUrl(path){return new URL(String(path).replace(/^\/+/,''),APP_BASE_URL).href}
 function transportEndpoint(engine,kind){
-  if(engine==='ultraviolet')return kind==='epoxy'?'/uv-epoxy/index.mjs':'/uv-libcurl/index.mjs';
-  return kind==='epoxy'?'/epoxy/index.mjs':'/libcurl/index.mjs';
+  if(engine==='ultraviolet')return appUrl(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs');
+  return appUrl(kind==='epoxy'?'epoxy/index.mjs':'libcurl/index.mjs');
 }
-function wispEndpoint(){const scheme=location.protocol==='https:'?'wss:':'ws:';return `${scheme}//${location.host}/wisp/`}
+const WISP_SERVER_URL='wss://wisp.mercurywork.shop/';
+function wispEndpoint(){return WISP_SERVER_URL}
 function loadScramjetScript(src){
   return new Promise((resolve,reject)=>{
     const script=document.createElement('script');
@@ -635,7 +639,7 @@ function loadScramjetScript(src){
 }
 async function getProxyServiceWorker(){
   if(!window.isSecureContext||!('serviceWorker' in navigator))throw new Error('Proxy engines need localhost or an HTTPS site.');
-  const registration=await navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'});
+  const registration=await navigator.serviceWorker.register(appUrl('sw.js'),{scope:APP_BASE_URL.pathname,updateViaCache:'none'});
   await navigator.serviceWorker.ready;
   await registration.update();
   let updatingWorker=registration.installing||registration.waiting;
@@ -678,14 +682,14 @@ async function initializeScramjet(){
   if(scramjetBootPromise)return scramjetBootPromise;
   scramjetBootPromise=(async()=>{
     const serviceworker=await getProxyServiceWorker();
-    for(const src of ['/scram/scramjet.js','/controller/controller.api.js','/utils/scramjet-utils.js'])await loadScramjetScript(src);
+    for(const src of ['scram/scramjet.js','controller/controller.api.js','utils/scramjet-utils.js'])await loadScramjetScript(appUrl(src));
     const transport=await createScramjetTransport(transportKind);
     const api=window.$scramjetController;
     if(!api?.Controller||!window.$scramjetUtils?.UrlWatcherPlugin)throw new Error('Scramjet runtime scripts did not initialize.');
     const controller=new api.Controller({
       serviceworker,
       transport,
-      config:{scramjetPath:'/scram/scramjet.js',wasmPath:'/scram/scramjet.wasm',injectPath:'/controller/controller.inject.js'}
+      config:{scramjetPath:appUrl('scram/scramjet.js'),wasmPath:appUrl('scram/scramjet.wasm'),injectPath:appUrl('controller/controller.inject.js')}
     });
     await controller.wait();
     if(!scramjetKeepalive)scramjetKeepalive=setInterval(()=>navigator.serviceWorker.controller?.postMessage('keepalive'),15000);
@@ -704,10 +708,10 @@ async function initializeUltraviolet(){
   if(ultravioletBootPromise)return ultravioletBootPromise;
   ultravioletBootPromise=(async()=>{
     await getProxyServiceWorker();
-    for(const src of ['/uv/uv.bundle.js','/silverite-uv.config.js','/baremux/index.js'])await loadScramjetScript(src);
+    for(const src of ['uv/uv.bundle.js','silverite-uv.config.js','baremux/index.js'])await loadScramjetScript(appUrl(src));
     const BareMuxConnection=window.BareMux?.BareMuxConnection;
     if(!BareMuxConnection)throw new Error('Ultraviolet transport manager did not load.');
-    const connection=new BareMuxConnection('/baremux/worker.js');
+    const connection=new BareMuxConnection(appUrl('baremux/worker.js'));
     await connection.setTransport(transportEndpoint('ultraviolet',transportKind),[{wisp:wispEndpoint()}]);
     ultravioletConnection=connection;
     ultravioletTransportKind=transportKind;
@@ -783,6 +787,21 @@ async function navigateProxy(url){
     notify(`Scramjet could not start: ${error.message||'check the browser console for details.'}`);
   }
 }
+function withGameBaseUrl(html,url){
+  const base=`<base href="${escapeHTML(url)}">`;
+  if(/<base\b[^>]*>/i.test(html))return html.replace(/<base\b[^>]*>/i,base);
+  return /<head\b[^>]*>/i.test(html)?html.replace(/<head\b[^>]*>/i,head=>head+base):base+html;
+}
+async function loadGameDocument(frame,url){
+  const token=++gameLoadToken;
+  const response=await fetch(url,{mode:'cors',credentials:'omit',cache:'force-cache'});
+  if(!response.ok)throw new Error(`Game server returned HTTP ${response.status}`);
+  const html=await response.text();
+  if(!/<(?:!doctype\s+html|html|head|body)\b/i.test(html))throw new Error('The game server did not return an HTML page.');
+  if(token!==gameLoadToken)return false;
+  frame.srcdoc=withGameBaseUrl(html,url);
+  return true;
+}
 function openGame(name){
   const game=g4m3s.find(g=>g.name===name);if(!game)return;
   if(game.launchMode==='external'){
@@ -797,7 +816,13 @@ function openGame(name){
   const frame=$('#game-frame'),empty=$('#player-empty');
   frame.src='about:blank';
   if(game.url&&isAllowedGameAssetUrl(game.url,'game')){
-    frame.hidden=false;empty.hidden=true;frame.src=game.url;$('#player-status').textContent='GAME LOADING';
+    frame.hidden=false;empty.hidden=true;$('#player-status').textContent='GAME LOADING';
+    loadGameDocument(frame,game.url).then(loaded=>{if(loaded&&currentGame===game)$('#player-status').textContent='GAME READY'}).catch(error=>{
+      console.error('Game could not be loaded:',error);
+      if(currentGame!==game)return;
+      frame.hidden=true;empty.hidden=false;$('#player-status').textContent='GAME UNAVAILABLE';
+      empty.querySelector('p').textContent=`Could not load this game page: ${error.message} Check your connection and try again.`;
+    });
   }else{
     frame.hidden=true;empty.hidden=false;$('#player-status').textContent='PLACEHOLDER SLOT';
   }
@@ -807,7 +832,8 @@ function openGame(name){
 function closeGame(){
   if(!currentGame){go('g4m3s');return;}
   if($('#confirm-close-game').checked&&!confirm('Close this game and return to the library?'))return;
-  $('#game-frame').src='about:blank';$('#game-frame').hidden=true;$('#player-empty').hidden=false;
+  gameLoadToken++;$('#game-frame').src='about:blank';$('#game-frame').srcdoc='';$('#game-frame').hidden=true;$('#player-empty').hidden=false;
+  $('#player-empty').querySelector('p').textContent='This game could not be loaded. Check your connection or try opening it in a new tab.';
   currentGame=null;go('g4m3s');
 }
 function gameURL(){return currentGame&&currentGame.url&&isAllowedGameAssetUrl(currentGame.url,'game')?currentGame.url:''}
@@ -820,7 +846,7 @@ function openCurrentGameInTab(){
   const title=escapeHTML(currentGame.name);
   if(!url){tab.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>${title} · Silverite</title></head><body style="margin:0;background:#090909;color:#eee;font:16px monospace;display:grid;place-items:center;min-height:100vh">This game link is unavailable.</body></html>`);tab.document.close();return;}
   const safeUrl=escapeHTML(url);
-  tab.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · Silverite</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090909}iframe{width:100%;height:100%;border:0;display:block}</style></head><body><iframe title="${title}" src="${safeUrl}" sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock allow-downloads allow-modals" allow="fullscreen; autoplay; gamepad" allowfullscreen referrerpolicy="no-referrer"></iframe></body></html>`);
+  tab.document.write(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · Silverite</title><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#090909}iframe{width:100%;height:100%;border:0;display:block}</style></head><body><iframe title="${title}" data-game-url="${safeUrl}" sandbox="allow-scripts allow-forms allow-pointer-lock allow-downloads allow-modals" allow="fullscreen; autoplay; gamepad" allowfullscreen referrerpolicy="no-referrer"></iframe><script>(async()=>{const frame=document.querySelector('iframe'),url=frame.dataset.gameUrl;try{const response=await fetch(url,{mode:'cors',credentials:'omit'});if(!response.ok)throw new Error('HTTP '+response.status);let html=await response.text();const base='<base href="'+url.replace(/&/g,'&amp;').replace(/\"/g,'&quot;')+'">';html=/<base\\b[^>]*>/i.test(html)?html.replace(/<base\\b[^>]*>/i,base):html.replace(/<head\\b[^>]*>/i,head=>head+base);frame.srcdoc=html}catch(error){document.body.innerHTML='<div style="color:white;font:16px monospace;padding:24px">Could not load this game. Check your connection and try again.</div>'}})()</script></body></html>`);
   tab.document.close();
 }
 function go(view){
@@ -980,7 +1006,8 @@ async function loadChangelogs(){
   const list=$('#changelog-list');
   const toggle=$('#changelog-older-toggle');
   try{
-    const response=await fetch('/api/changelogs',{cache:'no-store'});
+    let response=await fetch(appUrl('api/changelogs'),{cache:'no-store'});
+    if(!response.ok)response=await fetch(appUrl('data/changelogs.json'),{cache:'no-store'});
     if(!response.ok)throw new Error(`HTTP ${response.status}`);
     const entries=await response.json();
     if(!Array.isArray(entries))throw new Error('Invalid changelog data');
@@ -1040,7 +1067,22 @@ $('#game-grid').addEventListener('click',e=>{
   const play=e.target.closest('[data-play]');if(play)openGame(play.dataset.play);
 });
 $('#close-game').addEventListener('click',closeGame);
-$('#reload-game').addEventListener('click',()=>{if(!currentGame)return;const url=gameURL();if(url){const frame=$('#game-frame');frame.src='about:blank';requestAnimationFrame(()=>frame.src=url);$('#player-status').textContent='RELOADING';}else notify('This game has no reloadable URL.');});
+$('#reload-game').addEventListener('click',()=>{
+  if(!currentGame)return;
+  const game=currentGame,url=gameURL();
+  if(!url){notify('This game has no reloadable URL.');return;}
+  const frame=$('#game-frame'),empty=$('#player-empty');
+  frame.src='about:blank';frame.srcdoc='';frame.hidden=false;empty.hidden=true;
+  $('#player-status').textContent='RELOADING';
+  loadGameDocument(frame,url).then(loaded=>{
+    if(loaded&&currentGame===game)$('#player-status').textContent='GAME READY';
+  }).catch(error=>{
+    console.error('Game could not be reloaded:',error);
+    if(currentGame!==game)return;
+    frame.hidden=true;empty.hidden=false;$('#player-status').textContent='GAME UNAVAILABLE';
+    empty.querySelector('p').textContent=`Could not load this game page: ${error.message} Check your connection and try again.`;
+  });
+});
 $('#copy-game').addEventListener('click',async()=>{const url=gameURL();if(!url){notify('There is no game link available.');return;}try{await navigator.clipboard.writeText(url);notify('Game link copied.')}catch(e){notify('Clipboard access is unavailable in this browser.')}});
 $('#favorite-game').addEventListener('click',()=>{if(!currentGame)return;const name=currentGame.name;if(favorites.has(name))favorites.delete(name);else favorites.add(name);try{localStorage.setItem('silverite-favorites',JSON.stringify([...favorites]))}catch(err){}const on=favorites.has(name);$('#favorite-game').classList.toggle('is-favorite',on);$('#favorite-game').title=on?'Remove from favorites':'Add to favorites';renderg4m3s();notify(on?'Added to favorites.':'Removed from favorites.');});
 $('#newtab-game').addEventListener('click',openCurrentGameInTab);
