@@ -689,7 +689,7 @@ async function initializeScramjet(){
     const controller=new api.Controller({
       serviceworker,
       transport,
-      config:{scramjetPath:appUrl('scram/scramjet.js'),wasmPath:appUrl('scram/scramjet.wasm'),injectPath:appUrl('controller/controller.inject.js')}
+      config:{prefix:new URL('scramjet/',APP_BASE_URL).pathname,scramjetPath:appUrl('scram/scramjet.js'),wasmPath:appUrl('scram/scramjet.wasm'),injectPath:appUrl('controller/controller.inject.js')}
     });
     await controller.wait();
     if(!scramjetKeepalive)scramjetKeepalive=setInterval(()=>navigator.serviceWorker.controller?.postMessage('keepalive'),15000);
