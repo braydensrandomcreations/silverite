@@ -621,7 +621,7 @@ let ultravioletConnection=null;
 let ultravioletTransportKind=null;
 function selectedTransportKind(){return userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl'}
 function resolveAppBaseUrl(){
-  const sources=[document.currentScript?.src,document.baseURI];
+  const sources=[document.currentScript?.src,document.currentScript?.dataset?.appBase,document.baseURI];
   try{if(window.frameElement?.ownerDocument?.baseURI)sources.push(window.frameElement.ownerDocument.baseURI)}catch(error){}
   sources.push(location.href);
   for(const source of sources){
