@@ -663,19 +663,35 @@ function resolveAppBaseUrl(){
 }
 const APP_BASE_URL=resolveAppBaseUrl();
 function appUrl(path){return new URL(String(path).replace(/^\/+/,''),APP_BASE_URL).href}
+const TRANSPORT_CACHE_VERSION='2';
+function versionedUrl(href,version){
+  const url=new URL(href);
+  url.searchParams.set('v',version);
+  return url.href;
+}
 function transportEndpoint(engine,kind){
-  if(engine==='ultraviolet')return appUrl(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs');
-  return appUrl(kind==='epoxy'?'epoxy/index.mjs':'libcurl/index.mjs');
+  const path=engine==='ultraviolet'?(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs'):(kind==='epoxy'?'epoxy/index.mjs':'libcurl/index.mjs');
+  return versionedUrl(appUrl(path),TRANSPORT_CACHE_VERSION);
 }
 const WISP_SERVER_URL='wss://wisp.mercurywork.shop/';
 function wispEndpoint(){return WISP_SERVER_URL}
 function loadScramjetScript(src){
   return new Promise((resolve,reject)=>{
-    const script=document.createElement('script');
-    script.src=src;
-    script.onload=resolve;
-    script.onerror=()=>{const error=new Error(`Could not load proxy runtime: ${src}`);logProxyDiagnostic('error','Proxy runtime script failed to load',diagnosticText(error));script.remove();reject(error);};
-    document.head.append(script);
+    const append=(url,isRetry)=>{
+      const script=document.createElement('script');
+      script.src=url;
+      script.onload=resolve;
+      script.onerror=()=>{
+        script.remove();
+        if(!isRetry){
+          const retry=new URL(url);retry.searchParams.set('retry',Date.now().toString(36));append(retry.href,true);return;
+        }
+        const error=new Error(`Could not load proxy runtime: ${url}`);
+        logProxyDiagnostic('error','Proxy runtime script failed to load',diagnosticText(error));reject(error);
+      };
+      document.head.append(script);
+    };
+    append(src,false);
   });
 }
 async function getProxyServiceWorker(){
@@ -713,8 +729,15 @@ async function getProxyServiceWorker(){
   if(!worker)throw new Error('The proxy service worker is not active.');
   return worker;
 }
+async function importTransport(url){
+  try{return await import(url);}
+  catch(error){
+    const retry=new URL(url);retry.searchParams.set('retry',Date.now().toString(36));
+    try{return await import(retry.href);}catch(retryError){throw error;}
+  }
+}
 async function createScramjetTransport(kind){
-  const {default:Transport}=await import(transportEndpoint('scramjet',kind));
+  const {default:Transport}=await importTransport(transportEndpoint('scramjet',kind));
   return new Transport({wisp:wispEndpoint()});
 }
 async function initializeScramjet(){
@@ -743,10 +766,18 @@ async function initializeScramjet(){
   })().catch(error=>{scramjetBootPromise=null;throw error;});
   return scramjetBootPromise;
 }
+async function setUltravioletTransport(connection,kind){
+  const url=transportEndpoint('ultraviolet',kind);
+  try{await connection.setTransport(url,[{wisp:wispEndpoint()}]);}
+  catch(error){
+    const retry=new URL(url);retry.searchParams.set('retry',Date.now().toString(36));
+    await connection.setTransport(retry.href,[{wisp:wispEndpoint()}]);
+  }
+}
 async function initializeUltraviolet(){
   const transportKind=selectedTransportKind();
   if(ultravioletConnection){
-    if(ultravioletTransportKind!==transportKind){await ultravioletConnection.setTransport(transportEndpoint('ultraviolet',transportKind),[{wisp:wispEndpoint()}]);ultravioletTransportKind=transportKind;}
+    if(ultravioletTransportKind!==transportKind){await setUltravioletTransport(ultravioletConnection,transportKind);ultravioletTransportKind=transportKind;}
     return ultravioletConnection;
   }
   if(ultravioletBootPromise)return ultravioletBootPromise;
@@ -755,8 +786,8 @@ async function initializeUltraviolet(){
     for(const src of ['uv/uv.bundle.js','silverite-uv.config.js','baremux/index.js'])await loadScramjetScript(appUrl(src));
     const BareMuxConnection=window.BareMux?.BareMuxConnection;
     if(!BareMuxConnection)throw new Error('Ultraviolet transport manager did not load.');
-    const connection=new BareMuxConnection(appUrl('baremux/worker.js'));
-    await connection.setTransport(transportEndpoint('ultraviolet',transportKind),[{wisp:wispEndpoint()}]);
+    const connection=new BareMuxConnection(versionedUrl(appUrl('baremux/worker.js'),TRANSPORT_CACHE_VERSION));
+    await setUltravioletTransport(connection,transportKind);
     ultravioletConnection=connection;
     ultravioletTransportKind=transportKind;
     return connection;
