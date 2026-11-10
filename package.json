@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.mjs",
     "build:pages": "node scripts/build-pages.mjs",
-    "build:svg": "node scripts/build-svg.mjs"
+    "build:svg": "node scripts/build-svg.mjs",
+    "vendor:runtime": "node scripts/vendor-runtime.mjs"
   },
   "engines": {
     "node": ">=20"
