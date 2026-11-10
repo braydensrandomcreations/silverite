@@ -620,7 +620,21 @@ let ultravioletBootPromise=null;
 let ultravioletConnection=null;
 let ultravioletTransportKind=null;
 function selectedTransportKind(){return userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl'}
-const APP_BASE_URL=new URL('.',document.currentScript?.src||location.href);
+function resolveAppBaseUrl(){
+  const sources=[document.currentScript?.src,document.baseURI];
+  try{if(window.frameElement?.ownerDocument?.baseURI)sources.push(window.frameElement.ownerDocument.baseURI)}catch(error){}
+  sources.push(location.href);
+  for(const source of sources){
+    if(!source)continue;
+    try{
+      const url=new URL(source);
+      if(url.protocol==='about:'||url.protocol==='data:')continue;
+      return new URL('.',url);
+    }catch(error){}
+  }
+  throw new Error('Could not determine the Silverite app base URL. Open the site from HTTPS or localhost.');
+}
+const APP_BASE_URL=resolveAppBaseUrl();
 function appUrl(path){return new URL(String(path).replace(/^\/+/,''),APP_BASE_URL).href}
 function transportEndpoint(engine,kind){
   if(engine==='ultraviolet')return appUrl(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs');
