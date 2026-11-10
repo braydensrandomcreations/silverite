@@ -927,8 +927,18 @@ function closeProxyTab(id){
   if(activeProxyTabId===id){const next=proxyTabs[Math.max(0,index-1)];activeProxyTabId=next.id;$('#address-bar').value=next.address||'';$('#proxy-home-search').value='';}
   renderProxyTabs();go('proxy');
 }
-function isURL(text){return /^(https?:\/\/|[\w-]+\.[a-z]{2,})(\/|$)/i.test(text.trim())}
-function openSearchOrURL(value){const text=value.trim();if(!text)return;const url=isURL(text)?(text.match(/^https?:\/\//i)?text:`https://${text}`):`https://duckduckgo.com/?q=${encodeURIComponent(text)}`;navigateProxy(url);}
+function normalizeProxyInput(value){
+  const text=String(value||'').trim();
+  if(!text)return '';
+  if(/^https?:\/\//i.test(text)){
+    try{return new URL(text).href}catch(error){}
+  }
+  if(!/\s/.test(text)&&/^[\w-]+(?:\.[\w-]+)+(?:\:\d+)?(?:[\/?#]|$)/.test(text)){
+    try{return new URL(`https://${text}`).href}catch(error){}
+  }
+  return `https://duckduckgo.com/?q=${encodeURIComponent(text)}`;
+}
+function openSearchOrURL(value){const url=normalizeProxyInput(value);if(url)navigateProxy(url);}
 function updateClock(){const now=new Date();$('#clock').textContent=now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
 function persistSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(userSettings))}catch(e){notify('Could not save preferences in this browser.')}}
 function imageFromSource(src){
