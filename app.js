@@ -552,6 +552,33 @@ let activeView='proxy',toastTimer;
 let favorites=new Set();
 try{favorites=new Set(JSON.parse(localStorage.getItem('silverite-favorites')||'[]'))}catch(e){}
 function notify(message){const t=$('#toast');t.textContent=message;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2500)}
+const proxyDiagnostics=[];
+const PROXY_DIAGNOSTIC_LIMIT=250;
+function diagnosticText(value){
+  if(value instanceof Error)return `${value.name}: ${value.message}${value.stack?`\n${value.stack}`:''}`;
+  if(typeof value==='string')return value;
+  try{return JSON.stringify(value)}catch(error){return String(value)}
+}
+function logProxyDiagnostic(kind,message,details=''){
+  const time=new Date().toLocaleTimeString();
+  proxyDiagnostics.push(`[${time}] ${kind.toUpperCase()} ${message}${details?`\n${details}`:''}`);
+  if(proxyDiagnostics.length>PROXY_DIAGNOSTIC_LIMIT)proxyDiagnostics.splice(0,proxyDiagnostics.length-PROXY_DIAGNOSTIC_LIMIT);
+  const output=$('#diagnostics-output');
+  if(output){output.textContent=proxyDiagnostics.join('\n\n');output.scrollTop=output.scrollHeight;}
+}
+for(const method of ['error','warn']){
+  const original=console[method].bind(console);
+  console[method]=(...args)=>{logProxyDiagnostic(method,args.map(diagnosticText).join(' '));original(...args);};
+}
+window.addEventListener('error',event=>logProxyDiagnostic('error',event.message||'Uncaught page error',event.error?diagnosticText(event.error):`${event.filename||''}:${event.lineno||0}:${event.colno||0}`));
+window.addEventListener('unhandledrejection',event=>logProxyDiagnostic('error','Unhandled promise rejection',diagnosticText(event.reason)));
+function setDiagnosticsOpen(open){
+  const panel=$('#proxy-diagnostics');
+  if(!panel)return;
+  panel.hidden=!open;
+  $('#toggle-diagnostics')?.classList.toggle('active',open);
+  if(open&&!proxyDiagnostics.length)logProxyDiagnostic('info','Console ready. Reproduce the proxy error to capture details.');
+}
 function escapeHTML(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function cardTemplate(game){
   const safe=escapeHTML(game.name);const fav=favorites.has(game.name);const thumbnail=game.image?escapeHTML(game.image):'https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png';const placeholderFlag=game.image?'':'data-placeholder="true"';const candidateAttr=game.imageCandidates?.length?`data-image-candidates="${escapeHTML(JSON.stringify(game.imageCandidates))}" data-image-candidate-index="0"`:'';const image=`<img class="game-thumb" src="${thumbnail}" ${placeholderFlag} ${candidateAttr} alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="if(this.dataset.imageCandidates){const c=JSON.parse(this.dataset.imageCandidates);const i=Number(this.dataset.imageCandidateIndex||0)+1;if(i<c.length){this.dataset.imageCandidateIndex=i;this.src=c[i];return}}if(this.dataset.placeholder){this.remove();this.parentElement.classList.remove('has-thumb')}else{this.dataset.placeholder='true';this.src='https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/no-thumbnail.png'}">`;
@@ -621,7 +648,7 @@ let ultravioletConnection=null;
 let ultravioletTransportKind=null;
 function selectedTransportKind(){return userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl'}
 function resolveAppBaseUrl(){
-  const sources=[document.currentScript?.src,document.currentScript?.dataset?.appBase,document.baseURI];
+  const sources=[document.currentScript?.src,document.baseURI];
   try{if(window.frameElement?.ownerDocument?.baseURI)sources.push(window.frameElement.ownerDocument.baseURI)}catch(error){}
   sources.push(location.href);
   for(const source of sources){
@@ -647,13 +674,16 @@ function loadScramjetScript(src){
     const script=document.createElement('script');
     script.src=src;
     script.onload=resolve;
-    script.onerror=()=>{script.remove();reject(new Error(`Could not load ${src}`));};
+    script.onerror=()=>{const error=new Error(`Could not load proxy runtime: ${src}`);logProxyDiagnostic('error','Proxy runtime script failed to load',diagnosticText(error));script.remove();reject(error);};
     document.head.append(script);
   });
 }
 async function getProxyServiceWorker(){
   if(!window.isSecureContext||!('serviceWorker' in navigator))throw new Error('Proxy engines need localhost or an HTTPS site.');
-  const registration=await navigator.serviceWorker.register(appUrl('sw.js'),{scope:APP_BASE_URL.pathname,updateViaCache:'none'});
+  logProxyDiagnostic('info',`Registering service worker: ${appUrl('sw.js')}`,`Scope: ${APP_BASE_URL.pathname}`);
+  let registration;
+  try{registration=await navigator.serviceWorker.register(appUrl('sw.js'),{scope:APP_BASE_URL.pathname,updateViaCache:'none'});}
+  catch(error){logProxyDiagnostic('error','Service worker registration failed',diagnosticText(error));throw error;}
   await navigator.serviceWorker.ready;
   await registration.update();
   let updatingWorker=registration.installing||registration.waiting;
@@ -758,6 +788,7 @@ async function ensureProxyFrame(tab){
   iframe.setAttribute('sandbox','allow-forms allow-modals allow-popups allow-presentation allow-same-origin allow-scripts allow-downloads allow-pointer-lock');
   iframe.setAttribute('allow','fullscreen; autoplay; gamepad; clipboard-read; clipboard-write');
   $('#proxy-frame-container').append(iframe);
+  iframe.addEventListener('load',()=>logProxyDiagnostic('info',`Proxy frame loaded (${engine})`,tab.address||'No address recorded'));
   tab.frameElement=iframe;
   tab.engine=engine;
   if(engine==='scramjet'){
@@ -791,12 +822,14 @@ async function navigateProxy(url){
   const tab=proxyTabs.find(item=>item.id===activeProxyTabId);
   if(!tab)return;
   go('proxy');
+  logProxyDiagnostic('info','Navigation requested',`URL: ${url}\nEngine: ${userSettings.defaultEngine||'scramjet'}`);
   updateProxyTabAddress(tab,url);
   try{
     const frame=await ensureProxyFrame(tab);
     updateProxySurface();
     frame.go(url);
   }catch(error){
+    logProxyDiagnostic('error','Proxy startup/navigation failed',diagnosticText(error));
     console.error('Scramjet could not start:',error);
     notify(`Scramjet could not start: ${error.message||'check the browser console for details.'}`);
   }
@@ -927,18 +960,8 @@ function closeProxyTab(id){
   if(activeProxyTabId===id){const next=proxyTabs[Math.max(0,index-1)];activeProxyTabId=next.id;$('#address-bar').value=next.address||'';$('#proxy-home-search').value='';}
   renderProxyTabs();go('proxy');
 }
-function normalizeProxyInput(value){
-  const text=String(value||'').trim();
-  if(!text)return '';
-  if(/^https?:\/\//i.test(text)){
-    try{return new URL(text).href}catch(error){}
-  }
-  if(!/\s/.test(text)&&/^[\w-]+(?:\.[\w-]+)+(?:\:\d+)?(?:[\/?#]|$)/.test(text)){
-    try{return new URL(`https://${text}`).href}catch(error){}
-  }
-  return `https://duckduckgo.com/?q=${encodeURIComponent(text)}`;
-}
-function openSearchOrURL(value){const url=normalizeProxyInput(value);if(url)navigateProxy(url);}
+function isURL(text){return /^(https?:\/\/|[\w-]+\.[a-z]{2,})(\/|$)/i.test(text.trim())}
+function openSearchOrURL(value){const text=value.trim();if(!text)return;const url=isURL(text)?(text.match(/^https?:\/\//i)?text:`https://${text}`):`https://duckduckgo.com/?q=${encodeURIComponent(text)}`;navigateProxy(url);}
 function updateClock(){const now=new Date();$('#clock').textContent=now.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});}
 function persistSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(userSettings))}catch(e){notify('Could not save preferences in this browser.')}}
 function imageFromSource(src){
@@ -1076,6 +1099,8 @@ $('#new-proxy-tab').addEventListener('click',addProxyTab);
 $('#proxy-tab-list').addEventListener('click',e=>{const close=e.target.closest('[data-close-proxy-tab]');if(close){closeProxyTab(Number(close.dataset.closeProxyTab));return;}const tab=e.target.closest('[data-proxy-tab]');if(tab)activateProxyTab(Number(tab.dataset.proxyTab));});
 $('#address-form').addEventListener('submit',e=>{e.preventDefault();openSearchOrURL($('#address-bar').value)});
 $('#proxy-home-search-form').addEventListener('submit',e=>{e.preventDefault();openSearchOrURL($('#proxy-home-search').value)});
+$('#toggle-diagnostics')?.addEventListener('click',()=>setDiagnosticsOpen($('#proxy-diagnostics').hidden));
+$('#close-diagnostics')?.addEventListener('click',()=>setDiagnosticsOpen(false));
 $$('[data-proxy-url]').forEach(b=>b.addEventListener('click',()=>navigateProxy(b.dataset.proxyUrl)));
 $$('[data-external]').forEach(b=>b.addEventListener('click',()=>window.open(b.dataset.external,'_blank','noopener,noreferrer')));
 $('#g4m3s-search-form').addEventListener('submit',e=>e.preventDefault());

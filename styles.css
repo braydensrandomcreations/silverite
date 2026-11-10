@@ -443,6 +443,12 @@ a{color:var(--accent)}
 #view-proxy.is-browsing .home-center,#view-proxy.is-browsing .clock{display:none}
 .proxy-frame{position:absolute;inset:0;width:100%;height:100%;display:none;border:0;background:#fff}
 .proxy-frame.is-active{display:block}
+.proxy-diagnostics{position:absolute;z-index:12;right:18px;bottom:18px;width:min(640px,calc(100% - 36px));max-height:min(58vh,520px);display:flex;flex-direction:column;border:1px solid #484848;border-radius:8px;background:rgba(12,12,12,.97);color:#eee;box-shadow:0 14px 45px #0009;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}
+.proxy-diagnostics[hidden]{display:none}
+.proxy-diagnostics-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;border-bottom:1px solid #303030;font:9px var(--pixel);letter-spacing:.4px}
+.proxy-diagnostics-header strong span{margin-left:7px;color:#9a9a9a;font:8px var(--ui-pixel)}
+.proxy-diagnostics-header button{width:28px;height:28px;border:1px solid #383838;border-radius:5px;background:#181818;color:#fff;font-size:20px;cursor:pointer}
+#diagnostics-output{margin:0;padding:12px 14px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;color:#e8e8e8;font:11px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;user-select:text}
 
 /* SETTINGS PAGE REDESIGN: category rail + one aligned content column */
 .settings-view{padding:clamp(20px,3vw,38px) clamp(16px,3.2vw,44px) 44px;max-width:none;min-height:100%;}

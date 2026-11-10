@@ -105,6 +105,10 @@
         </div>
       </div>
       <div class="proxy-frame-container" id="proxy-frame-container" aria-label="Proxied pages"></div>
+      <aside class="proxy-diagnostics" id="proxy-diagnostics" hidden aria-label="Read-only proxy diagnostics">
+        <div class="proxy-diagnostics-header"><strong>PROXY DIAGNOSTICS <span>READ ONLY</span></strong><button type="button" id="close-diagnostics" aria-label="Close diagnostics">×</button></div>
+        <pre id="diagnostics-output" role="log" aria-live="off">No diagnostics captured yet.</pre>
+      </aside>
     </section>
 
     <section class="view standard-view settings-view" id="view-settings">
@@ -263,6 +267,7 @@
     <button class="rail-btn active" data-view="proxy" title="Proxy" aria-label="Proxy"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg></button>
     <button class="rail-btn" data-view="g4m3s" title="g4m3s" aria-label="g4m3s"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.1 7.25h9.8a4.75 4.75 0 0 1 4.63 5.8l-1.02 4.2a2.65 2.65 0 0 1-4.32 1.45L13.1 16h-2.2l-3.09 2.7a2.65 2.65 0 0 1-4.32-1.45l-1.02-4.2a4.75 4.75 0 0 1 4.63-5.8Z"/><path d="M7.2 10.5v4.2M5.1 12.6h4.2"/><circle cx="16.2" cy="11.6" r=".85" fill="currentColor" stroke="none"/><circle cx="18.25" cy="14" r=".85" fill="currentColor" stroke="none"/></svg></button>
     <button class="rail-btn" data-view="changelog" title="Changelog" aria-label="Changelog"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 5.5v12M8 7h8M8 11h8M8 15h5"/></svg></button>
+    <button class="rail-btn" id="toggle-diagnostics" title="Proxy diagnostics" aria-label="Proxy diagnostics"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9l3 3-3 3M13 15h4"/></svg></button>
     <div class="rail-spacer"></div>
     <button class="rail-btn" data-view="settings" title="Settings" aria-label="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 1.72l-.1.79a2 2 0 0 1-1.01 1.42l-.73.42a2 2 0 0 1-1.73.1l-.7-.29a2 2 0 0 0-2.45.92l-.22.38a2 2 0 0 0 .43 2.55l.6.5a2 2 0 0 1 .65 1.62v.84a2 2 0 0 1-.65 1.62l-.6.5a2 2 0 0 0-.43 2.55l.22.38a2 2 0 0 0 2.45.92l.7-.29a2 2 0 0 1 1.73.1l.73.42a2 2 0 0 1 1.01 1.42l.1.79a2 2 0 0 0 2 1.72h.44a2 2 0 0 0 2-1.72l.1-.79a2 2 0 0 1 1.01-1.42l.73-.42a2 2 0 0 1 1.73-.1l.7.29a2 2 0 0 0 2.45-.92l.22-.38a2 2 0 0 0-.43-2.55l-.6-.5a2 2 0 0 1-.65-1.62v-.84a2 2 0 0 1 .65-1.62l.6-.5a2 2 0 0 0 .43-2.55l-.22-.38a2 2 0 0 0-2.45-.92l-.7.29a2 2 0 0 1-1.73-.1l-.73-.42a2 2 0 0 1-1.01-1.42l-.1-.79a2 2 0 0 0-2-1.72z"/><circle cx="12" cy="12" r="3"/></svg></button>
     <button class="rail-btn" id="fullscreen-btn" title="Fullscreen" aria-label="Fullscreen"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
@@ -274,6 +279,6 @@
   <span id="preload-status-text">PRELOADING ASSETS 0/372</span>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="app.js" data-app-base="https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@silverite-static/"></script>
+<script src="app.js"></script>
 </body>
 </html>
