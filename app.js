@@ -673,8 +673,58 @@ function transportEndpoint(engine,kind){
   const path=engine==='ultraviolet'?(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs'):(kind==='epoxy'?'epoxy/index.mjs':'libcurl/index.mjs');
   return versionedUrl(appUrl(path),TRANSPORT_CACHE_VERSION);
 }
-const WISP_SERVER_URL='wss://wisp.mercurywork.shop/';
-function wispEndpoint(){return WISP_SERVER_URL}
+const WISP_SERVER_URLS=['wss://wisp.mercurywork.shop/','wss://anura.pro/'];
+const WISP_CACHE_KEY='silverite.wispEndpoint';
+let activeWispEndpoint=null;
+let wispProbePromise=null;
+function wispEndpoint(){return activeWispEndpoint||WISP_SERVER_URLS[0]}
+function cachedWispEndpoint(){
+  try{
+    const cached=JSON.parse(localStorage.getItem(WISP_CACHE_KEY)||'null');
+    if(cached?.url&&Date.now()-cached.at<30*60*1000)return cached.url;
+  }catch(error){}
+  return null;
+}
+function rememberWispEndpoint(url){
+  try{localStorage.setItem(WISP_CACHE_KEY,JSON.stringify({url,at:Date.now()}));}catch(error){}
+}
+function probeWispEndpoint(url,timeout=4000){
+  return new Promise(resolve=>{
+    let socket;
+    let settled=false;
+    const finish=reachable=>{
+      if(settled)return;
+      settled=true;
+      clearTimeout(timer);
+      try{socket?.close();}catch(error){}
+      resolve(reachable);
+    };
+    const timer=setTimeout(()=>finish(false),timeout);
+    try{socket=new WebSocket(url);}
+    catch(error){finish(false);return;}
+    socket.addEventListener('open',()=>finish(true),{once:true});
+    socket.addEventListener('error',()=>finish(false),{once:true});
+    socket.addEventListener('close',()=>finish(false),{once:true});
+  });
+}
+async function ensureWispEndpoint(){
+  if(activeWispEndpoint)return activeWispEndpoint;
+  if(wispProbePromise)return wispProbePromise;
+  wispProbePromise=(async()=>{
+    const cached=cachedWispEndpoint();
+    const candidates=cached?[cached,...WISP_SERVER_URLS.filter(url=>url!==cached)]:WISP_SERVER_URLS;
+    const results=[];
+    for(const url of candidates){
+      const reachable=await probeWispEndpoint(url);
+      results.push(`${url} ${reachable?'reachable':'unreachable'}`);
+      if(reachable){activeWispEndpoint=url;rememberWispEndpoint(url);break;}
+    }
+    if(!activeWispEndpoint)activeWispEndpoint=WISP_SERVER_URLS[0];
+    logProxyDiagnostic('info',`WISP endpoint: ${activeWispEndpoint}`,results.join('\n'));
+    return activeWispEndpoint;
+  })();
+  return wispProbePromise;
+}
 function loadScramjetScript(src){
   return new Promise((resolve,reject)=>{
     const append=(url,isRetry)=>{
@@ -738,6 +788,7 @@ async function importTransport(url){
 }
 async function createScramjetTransport(kind){
   const {default:Transport}=await importTransport(transportEndpoint('scramjet',kind));
+  await ensureWispEndpoint();
   return new Transport({wisp:wispEndpoint()});
 }
 async function initializeScramjet(){
@@ -768,6 +819,7 @@ async function initializeScramjet(){
 }
 async function setUltravioletTransport(connection,kind){
   const url=transportEndpoint('ultraviolet',kind);
+  await ensureWispEndpoint();
   try{await connection.setTransport(url,[{wisp:wispEndpoint()}]);}
   catch(error){
     const retry=new URL(url);retry.searchParams.set('retry',Date.now().toString(36));
