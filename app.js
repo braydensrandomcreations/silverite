@@ -636,7 +636,7 @@ function renderg4m3s(){
 }
 let currentGame=null;
 let gameLoadToken=0;
-let proxyTabs=[{id:1,title:'New Tab',address:'',frame:null,frameElement:null}];
+let proxyTabs=[{id:1,title:'New Tab',address:'',frame:null,frameElement:null,loading:false}];
 let activeProxyTabId=1;
 let nextProxyTabId=2;
 let scramjetController=null;
@@ -858,6 +858,8 @@ function updateProxySurface(){
   const browsing=Boolean(active?.frameElement&&active.address);
   view.classList.toggle('is-browsing',browsing);
   for(const tab of proxyTabs)tab.frameElement?.classList.toggle('is-active',browsing&&tab.id===activeProxyTabId);
+  const loading=$('#proxy-loading');
+  if(loading)loading.hidden=!(activeView==='proxy'&&active?.loading);
 }
 async function ensureProxyFrame(tab){
   const engine=userSettings.defaultEngine==='ultraviolet'?'ultraviolet':'scramjet';
@@ -892,6 +894,9 @@ async function ensureProxyFrame(tab){
 }
 function destroyProxyFrame(tab){
   if(tab.urlMonitor)clearInterval(tab.urlMonitor);
+  clearTimeout(tab.loadingTimer);
+  tab.loadingTimer=null;
+  tab.loading=false;
   if(tab.frame&&tab.engine==='scramjet'&&scramjetController){
     const index=scramjetController.frames.indexOf(tab.frame);
     if(index!==-1)scramjetController.frames.splice(index,1);
@@ -905,13 +910,38 @@ async function navigateProxy(url){
   const tab=proxyTabs.find(item=>item.id===activeProxyTabId);
   if(!tab)return;
   go('proxy');
+  tab.loading=true;
+  updateProxySurface();
   logProxyDiagnostic('info','Navigation requested',`URL: ${url}\nEngine: ${userSettings.defaultEngine||'scramjet'}`);
   updateProxyTabAddress(tab,url);
   try{
     const frame=await ensureProxyFrame(tab);
     updateProxySurface();
+    const iframe=tab.frameElement;
+    const finish=()=>{
+      let href='';
+      try{href=iframe.contentWindow?.location.href||iframe.src||''}catch(error){href=iframe.src||''}
+      if(!href||href==='about:blank')return;
+      iframe.removeEventListener('load',finish);
+      tab.loading=false;
+      clearTimeout(tab.loadingTimer);
+      tab.loadingTimer=null;
+      updateProxySurface();
+    };
+    iframe.addEventListener('load',finish);
+    clearTimeout(tab.loadingTimer);
+    tab.loadingTimer=setTimeout(()=>{
+      tab.loadingTimer=null;
+      tab.loading=false;
+      iframe.removeEventListener('load',finish);
+      updateProxySurface();
+    },40000);
     frame.go(url);
   }catch(error){
+    tab.loading=false;
+    clearTimeout(tab.loadingTimer);
+    tab.loadingTimer=null;
+    updateProxySurface();
     logProxyDiagnostic('error','Proxy startup/navigation failed',diagnosticText(error));
     console.error('Scramjet could not start:',error);
     notify(`Scramjet could not start: ${error.message||'check the browser console for details.'}`);
@@ -1026,7 +1056,7 @@ function renderProxyTabs(){
   updateProxySurface();
 }
 function addProxyTab(){
-  const tab={id:nextProxyTabId++,title:'New Tab',address:'',frame:null,frameElement:null};
+  const tab={id:nextProxyTabId++,title:'New Tab',address:'',frame:null,frameElement:null,loading:false};
   proxyTabs.push(tab);activeProxyTabId=tab.id;
   $('#address-bar').value='';$('#proxy-home-search').value='';
   renderProxyTabs();go('proxy');

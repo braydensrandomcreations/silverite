@@ -105,6 +105,10 @@
         </div>
       </div>
       <div class="proxy-frame-container" id="proxy-frame-container" aria-label="Proxied pages"></div>
+      <div class="proxy-loading" id="proxy-loading" role="status" aria-live="polite" hidden>
+        <span class="proxy-loading-spinner" aria-hidden="true"></span>
+        <span class="proxy-loading-label">Loading page</span>
+      </div>
       <aside class="proxy-diagnostics" id="proxy-diagnostics" hidden aria-label="Read-only proxy diagnostics">
         <div class="proxy-diagnostics-header"><strong>PROXY DIAGNOSTICS <span>READ ONLY</span></strong><button type="button" id="close-diagnostics" aria-label="Close diagnostics">×</button></div>
         <pre id="diagnostics-output" role="log" aria-live="off">No diagnostics captured yet.</pre>
