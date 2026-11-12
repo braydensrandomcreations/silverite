@@ -1,0 +1,17 @@
+[
+  {
+    "version": "1.0.0",
+    "date": "2026-11-11",
+    "type": "major",
+    "title": "Silverite: INITIAL RELEASE!",
+    "changes": [
+      "A NEW HOME FOR GAMES — Silverite brings its own games together with titles from UGS, GN-Math, and Truffled in one searchable library. Each source has its own identity, and the library structure is ready to grow as more collections are added.",
+      "FIND YOUR NEXT GAME — Search across the catalog, browse every game in alphabetical order, or narrow the grid to a specific library. Your favorites stay saved on this device, so the games you come back to are easy to find.",
+      "A CLEANER CATALOG — Library icons fill their buttons, the selected library gets a clear outline, and inconsistent game names are cleaned up for easier scanning. Games without artwork receive a shared fallback thumbnail instead of an empty tile.",
+      "OPEN AND PLAY — Launch a game into Silverite's player view, keep the experience inside the site where the game allows it, and choose whether Silverite should confirm before you leave an active game.",
+      "BROWSE THROUGH THE PROXY — Scramjet is the recommended engine, with Ultraviolet available as an alternate compatibility option. Libcurl and Epoxy transports can be selected in Settings, and multiple proxy tabs include navigation controls and site favicons. YouTube and TikTok shortcuts open inside the proxy; compatibility depends on the destination site and may vary.",
+      "MAKE IT YOURS — Pick an accent color, choose a cursor style, or use your own cursor image. Cursor glow and its intensity are adjustable, and the clock and reduced-motion preferences let you tune the interface to your setup.",
+      "SET THE SCENE — Choose the classic grid or switch to animated waves, circles, dynamic dots, or fluid gradients. Upload a personal image for a custom backdrop; it is resized and saved with your browser preferences. The background collection is built to make room for more styles later."
+    ]
+  }
+]
