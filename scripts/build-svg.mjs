@@ -51,6 +51,21 @@ const embeddedCss = `${await inlineFonts(fontImports)}\n${css}`;
 
 const title = html.match(/<title>([\s\S]*?)<\/title>/)?.[1] ?? "Silverite";
 
+// The standalone SVG cannot rely on fetching data/changelogs.json (jsDelivr caches
+// it separately, and a saved file has no server), so bake the changelog in at build
+// time. app.js prefers this global and only falls back to fetching when it is absent.
+const changelogScript = await (async () => {
+  try {
+    const entries = JSON.parse(await source("data/changelogs.json"));
+    if (!Array.isArray(entries)) throw new Error("data/changelogs.json must contain an array");
+    const json = JSON.stringify(entries).replace(/</g, "\\u003c");
+    return `<script>window.__SILVERITE_CHANGELOGS__=${json};</script>`;
+  } catch (error) {
+    console.warn(`Could not embed changelogs: ${error.message}`);
+    return "";
+  }
+})();
+
 // A literal </script> inside app.js would close the inline <script> element early.
 const inlineScript = app.replace(/<\/script/gi, () => "<\\/script");
 
@@ -60,7 +75,7 @@ const inlineScript = app.replace(/<\/script/gi, () => "<\\/script");
 const baseUrlShim = `<script>(()=>{const NativeURL=window.URL;const base=document.baseURI;if(!base||base.startsWith("about:"))return;const fix=value=>typeof value==="string"&&value.startsWith("about:")?base:value;class BaseAwareURL extends NativeURL{constructor(url,baseArg){super(fix(url),baseArg===undefined?undefined:fix(baseArg))}}window.URL=BaseAwareURL})();</script>`;
 
 const inlinedHtml = html
-  .replace(/<head\b[^>]*>/i, (head) => `${head}\n${baseUrlShim}`)
+  .replace(/<head\b[^>]*>/i, (head) => `${head}\n${baseUrlShim}${changelogScript ? `\n${changelogScript}` : ""}`)
   .replace(/\s*<link\b[^>]*rel=["']stylesheet["'][^>]*>/i, () => `\n<style>${embeddedCss}</style>`)
   .replace(/\s*<script\b[^>]*src=["']app\.js["'][^>]*><\/script>/i, () => `\n<script>${inlineScript}</script>`);
 

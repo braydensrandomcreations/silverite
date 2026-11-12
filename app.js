@@ -1166,10 +1166,15 @@ async function loadChangelogs(){
   const list=$('#changelog-list');
   const toggle=$('#changelog-older-toggle');
   try{
-    let response=await fetch(appUrl('api/changelogs'),{cache:'no-store'});
-    if(!response.ok)response=await fetch(appUrl('data/changelogs.json'),{cache:'no-store'});
-    if(!response.ok)throw new Error(`HTTP ${response.status}`);
-    const entries=await response.json();
+    let entries;
+    if(Array.isArray(window.__SILVERITE_CHANGELOGS__)){
+      entries=window.__SILVERITE_CHANGELOGS__;
+    }else{
+      let response=await fetch(appUrl('api/changelogs'),{cache:'no-store'});
+      if(!response.ok)response=await fetch(appUrl('data/changelogs.json'),{cache:'no-store'});
+      if(!response.ok)throw new Error(`HTTP ${response.status}`);
+      entries=await response.json();
+    }
     if(!Array.isArray(entries))throw new Error('Invalid changelog data');
     entries.sort((a,b)=>Date.parse(b.date||'')-Date.parse(a.date||''));
     list.replaceChildren();
