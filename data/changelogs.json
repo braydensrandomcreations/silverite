@@ -1,0 +1,29 @@
+[
+  {
+    "version": "1.0.1",
+    "date": "2026-11-11",
+    "type": "regular",
+    "title": "Little Secrets, Cleaner Corners",
+    "sections": [
+      {
+        "label": "Additions",
+        "changes": [
+          "Click the home message to swap it. Land on the same one twice for a combo.",
+          "A new Credits tab.",
+          "A secret thing. Be gentle.",
+          "A small br4y signature in the rail.",
+          "Press Ctrl+K for a command palette that finds pages, tabs, and games.",
+          "HomeworkBot with Studi 1.0 answers questions, reads photos, and builds quizzes in Study mode."
+        ]
+      },
+      {
+        "label": "Fixes",
+        "changes": [
+          "Settings no longer shows grid lines through its cards.",
+          "Every game library now sorts A–Z.",
+          "GN-MATH games load again."
+        ]
+      }
+    ]
+  }
+]
