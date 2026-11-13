@@ -97,12 +97,17 @@
             <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
           </button>
         </form>
-        <p class="home-message" id="home-message" aria-live="polite"></p>
+        <p class="home-message" id="home-message" role="button" tabindex="0" title="Click for another message" aria-live="polite"></p>
+        <span class="home-combo" id="home-combo" aria-live="polite"></span>
         <div class="social-row">
           <button class="social-btn" data-proxy-url="https://www.tiktok.com" title="TikTok"><svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="none" d="M19.7 8.1a7.3 7.3 0 0 1-4.5-1.6v7.1a5.6 5.6 0 1 1-5.6-5.6c.4 0 .8 0 1.2.1v3.1a2.6 2.6 0 1 0 1.8 2.4V2.5h3a4.6 4.6 0 0 0 4.1 4.2v1.4Z"/></svg></button>
           <button class="social-btn" data-proxy-url="https://www.youtube.com" title="YouTube"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" ><rect x="2.5" y="5" width="19" height="14" rx="4"/><path d="m10 9 5 3-5 3V9Z" fill="currentColor" stroke="none"/></svg></button>
           <button class="social-btn" data-external="https://discord.com" title="Discord" aria-label="Discord"><svg class="icon brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" stroke="none" d="M19.73 5.23A18.6 18.6 0 0 0 15.2 3.8l-.57 1.16a16.2 16.2 0 0 0-5.26 0L8.8 3.8a18.6 18.6 0 0 0-4.53 1.43C1.4 9.53.63 13.52 1.02 17.45a18.8 18.8 0 0 0 5.56 2.8l1.2-1.96a12.1 12.1 0 0 1-1.89-.91l.46-.36a13.3 13.3 0 0 0 11.3 0l.46.36a12.1 12.1 0 0 1-1.89.91l1.2 1.96a18.8 18.8 0 0 0 5.56-2.8c.46-4.56-.78-8.52-3.25-12.22ZM8.6 14.97c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2.02.99 2 2.2c0 1.21-.89 2.2-2 2.2Zm6.8 0c-1.1 0-2-.99-2-2.2s.88-2.2 2-2.2 2.02.99 2 2.2c0 1.21-.88 2.2-2 2.2Z"/></svg></button>
         </div>
+        <button class="command-hint" id="command-hint" type="button" title="Open the command palette (Ctrl/Cmd+K)" aria-label="Open the command palette">
+          <span class="command-hint-key" id="command-hint-key">CTRL K</span>
+          <span>COMMAND PALETTE</span>
+        </button>
       </div>
       <div class="proxy-frame-container" id="proxy-frame-container" aria-label="Proxied pages"></div>
       <div class="proxy-loading" id="proxy-loading" role="status" aria-live="polite" hidden>
@@ -139,6 +144,10 @@
           <button class="settings-nav-button" type="button" data-settings-target="proxy" aria-current="false">
             <span class="settings-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
             <span class="settings-nav-label">Proxy</span><span class="settings-nav-chevron">›</span>
+          </button>
+          <button class="settings-nav-button" type="button" data-settings-target="homeworkbot" aria-current="false">
+            <span class="settings-nav-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 18h5.6M10.3 21h3.4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3Z"/></svg></span>
+            <span class="settings-nav-label">HomeworkBot</span><span class="settings-nav-chevron">›</span>
           </button>
           <div class="settings-nav-separator"></div>
           <button class="settings-nav-button settings-nav-button--advanced" type="button" data-settings-target="advanced" aria-current="false">
@@ -242,8 +251,27 @@
             </div>
           </section>
 
+          <section class="settings-section" id="settings-homeworkbot" aria-labelledby="settings-homeworkbot-title">
+            <div class="settings-section-heading"><span class="settings-section-number">05</span><div><h2 id="settings-homeworkbot-title">HomeworkBot</h2><p>Studi 1.0 works offline. Add a model key to let it read photos and answer anything.</p></div></div>
+            <div class="settings-panel">
+              <div class="settings-option-row settings-option-row--stacked">
+                <div class="settings-option-copy"><b>API key</b><small>Saved in this browser only. Leave it empty to use offline mode.</small></div>
+                <div class="settings-option-control settings-field-control"><input class="settings-text-input" id="studi-api-key" type="password" placeholder="Your API key" autocomplete="off" spellcheck="false"></div>
+              </div>
+              <div class="settings-option-row settings-option-row--stacked">
+                <div class="settings-option-copy"><b>Endpoint</b><small>Any chat-completions URL that accepts images.</small></div>
+                <div class="settings-option-control settings-field-control"><input class="settings-text-input" id="studi-endpoint" type="url" placeholder="https://api.openai.com/v1/chat/completions" autocomplete="off" spellcheck="false"></div>
+              </div>
+              <div class="settings-option-row settings-option-row--stacked">
+                <div class="settings-option-copy"><b>Model</b><small>The model name sent to your endpoint.</small></div>
+                <div class="settings-option-control settings-field-control"><input class="settings-text-input" id="studi-model" type="text" placeholder="gpt-4o-mini" autocomplete="off" spellcheck="false"></div>
+              </div>
+              <div class="settings-inline-note"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7h.01"/></svg><span>Without a key, Studi 1.0 solves math and unit conversions on this device and builds practice quizzes. With a key, your questions and photos are sent to the endpoint above.</span></div>
+            </div>
+          </section>
+
           <section class="settings-section" id="settings-advanced" aria-labelledby="settings-advanced-title">
-            <div class="settings-section-heading"><span class="settings-section-number">05</span><div><h2 id="settings-advanced-title">Advanced</h2><p>Maintenance options for this Silverite installation.</p></div></div>
+            <div class="settings-section-heading"><span class="settings-section-number">06</span><div><h2 id="settings-advanced-title">Advanced</h2><p>Maintenance options for this Silverite installation.</p></div></div>
             <div class="settings-panel settings-panel--danger">
               <div class="settings-option-row settings-option-row--reset">
                 <div class="settings-option-copy"><b>Reset all settings</b><small>Restore the default white accent and original interface preferences on this device.</small></div>
@@ -253,7 +281,78 @@
           </section>
         </div>
       </div>
-      <div class="footer-note settings-footer-note">SILVERITE · PREFERENCES SAVE AUTOMATICALLY</div>
+      <div class="settings-footer-row">
+        <div class="footer-note settings-footer-note">SILVERITE · PREFERENCES SAVE AUTOMATICALLY</div>
+        <button class="secret-cat" id="secret-cat" type="button" title="psst..." aria-label="A little secret cat">
+          <span class="secret-cat-hearts" id="secret-cat-hearts" aria-hidden="true"></span>
+          <svg class="secret-cat-svg" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+            <path class="secret-cat-tail" d="M29 31c4.6.6 6.6-2.2 5.6-5.1"/>
+            <path class="secret-cat-body" d="M11.5 33.5c.4-6.2 3.6-10.4 8.5-10.4s8.1 4.2 8.5 10.4Z"/>
+            <path class="secret-cat-head" d="M12.6 22.4 11.4 13l5.9 3.6h5.4l5.9-3.6-1.2 9.4a9.1 9.1 0 0 1-7.4 4.6 9.1 9.1 0 0 1-7.4-4.6Z"/>
+            <circle class="secret-cat-eye" cx="17.2" cy="20.4" r="1.15"/>
+            <circle class="secret-cat-eye" cx="22.8" cy="20.4" r="1.15"/>
+            <path class="secret-cat-nose" d="m20 22.9-1.1.9h2.2Z"/>
+          </svg>
+          <span class="secret-cat-bubble" id="secret-cat-bubble" aria-hidden="true">mrrp!</span>
+          <img class="secret-cat-explosion" id="secret-cat-explosion" src="assets/secret/explosion.gif" alt="" hidden>
+        </button>
+      </div>
+    </section>
+
+    <section class="view standard-view homework-view" id="view-homeworkbot">
+      <div class="homework-wrap">
+        <div class="homework-head">
+          <div class="homework-head-copy">
+            <div class="eyebrow">YOUR STUDY PARTNER</div>
+            <h1>HomeworkBot.</h1>
+            <p class="lede">Short answers by default. Switch to Study for quizzes and deeper explanations.</p>
+          </div>
+          <div class="studi-badge" title="Studi 1.0">
+            <span class="studi-badge-dot" aria-hidden="true"></span>
+            <span class="studi-badge-name">STUDI 1.0</span>
+            <small id="studi-status">OFFLINE READY</small>
+          </div>
+        </div>
+
+        <div class="studi-modes" role="tablist" aria-label="HomeworkBot mode">
+          <button class="studi-mode is-active" type="button" role="tab" aria-selected="true" data-studi-mode="normal">
+            <b>Normal</b><span>Quick, simple answers</span>
+          </button>
+          <button class="studi-mode" type="button" role="tab" aria-selected="false" data-studi-mode="study">
+            <b>Study</b><span>Quizzes and more detail</span>
+          </button>
+        </div>
+
+        <div class="studi-log" id="studi-log" role="log" aria-live="polite" aria-label="HomeworkBot conversation"></div>
+
+        <div class="studi-suggestions" id="studi-suggestions">
+          <button class="studi-suggestion" type="button" data-studi-prompt="What is 15% of 80?">What is 15% of 80?</button>
+          <button class="studi-suggestion" type="button" data-studi-prompt="Solve 3x + 5 = 20">Solve 3x + 5 = 20</button>
+          <button class="studi-suggestion" type="button" data-studi-prompt="Convert 5 km to miles">Convert 5 km to miles</button>
+          <button class="studi-suggestion" type="button" data-studi-prompt="Quiz me">Quiz me</button>
+        </div>
+
+        <form class="studi-composer" id="studi-form" autocomplete="off">
+          <div class="studi-attachment" id="studi-attachment" hidden>
+            <img id="studi-attachment-preview" alt="Attached homework image">
+            <span id="studi-attachment-name">image</span>
+            <button class="studi-attachment-remove" id="studi-attachment-remove" type="button" aria-label="Remove attached image">×</button>
+          </div>
+          <div class="studi-composer-row">
+            <label class="studi-attach" for="studi-image-input" title="Attach a photo of your homework">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.2"/></svg>
+              <span>PHOTO</span>
+            </label>
+            <input class="studi-file" id="studi-image-input" type="file" accept="image/*">
+            <textarea class="studi-input" id="studi-input" rows="1" placeholder="Ask a question, or attach a photo…" aria-label="Message HomeworkBot"></textarea>
+            <button class="studi-send" id="studi-send" type="submit">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6"/></svg>
+              <span>SEND</span>
+            </button>
+          </div>
+          <div class="studi-footnote">Studi 1.0 · <span id="studi-engine-note">works offline</span> · double-check important work</div>
+        </form>
+      </div>
     </section>
 
     <section class="view standard-view changelog-view" id="view-changelog">
@@ -266,21 +365,82 @@
       </div>
     </section>
 
+    <section class="view standard-view credits-view" id="view-credits">
+      <div class="credits-wrap">
+        <div class="eyebrow">THE PEOPLE BEHIND SILVERITE</div>
+        <h1>Credits.</h1>
+        <p class="lede">Silverite is built on the work of these people, projects, and game libraries. Thank you.</p>
+        <div class="credits-grid">
+          <article class="credit-card credit-card--lead">
+            <div class="credit-kicker">CREATED &amp; MAINTAINED BY</div>
+            <h2>br4y</h2>
+            <p>Design, code, and the occasional secret cat.</p>
+            <span class="credit-tag">OWNER</span>
+          </article>
+          <article class="credit-card credit-card--wide">
+            <div class="credit-kicker">GAME PROVIDERS</div>
+            <h2>Game libraries</h2>
+            <p>Silverite's catalog is made possible by these game collections.</p>
+            <ul class="credit-providers">
+              <li><b>UBZONE</b><span>The original Silverite game collection.</span></li>
+              <li><b>GN-MATH</b><span>Browser games, covers, and assets.</span></li>
+              <li><b>Seraph</b><span>A huge collection that expands the library.</span></li>
+              <li><b>UGS</b><span>Single-file games and assets.</span></li>
+            </ul>
+          </article>
+          <article class="credit-card">
+            <div class="credit-kicker">PROXY TECHNOLOGY</div>
+            <h2>Scramjet &amp; Ultraviolet</h2>
+            <p>The service-worker proxy engines that let Silverite browse the web.</p>
+          </article>
+          <article class="credit-card">
+            <div class="credit-kicker">ASSETS &amp; DELIVERY</div>
+            <h2>jsDelivr &amp; githack</h2>
+            <p>Fast, pinned delivery for game catalogs, thumbnails, and source files.</p>
+          </article>
+          <article class="credit-card">
+            <div class="credit-kicker">SPECIAL THANKS</div>
+            <h2>Everyone testing Silverite</h2>
+            <p>For the feedback, bug reports, and messages that keep this project moving.</p>
+          </article>
+        </div>
+        <div class="footer-note credits-footer">MADE WITH ♥ BY BR4Y</div>
+      </div>
+    </section>
+
   </main>
   <aside class="right-rail" id="right-rail" aria-label="Main navigation">
     <button class="rail-btn active" data-view="proxy" title="Proxy" aria-label="Proxy"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1z"/></svg></button>
     <button class="rail-btn" data-view="g4m3s" title="g4m3s" aria-label="g4m3s"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.1 7.25h9.8a4.75 4.75 0 0 1 4.63 5.8l-1.02 4.2a2.65 2.65 0 0 1-4.32 1.45L13.1 16h-2.2l-3.09 2.7a2.65 2.65 0 0 1-4.32-1.45l-1.02-4.2a4.75 4.75 0 0 1 4.63-5.8Z"/><path d="M7.2 10.5v4.2M5.1 12.6h4.2"/><circle cx="16.2" cy="11.6" r=".85" fill="currentColor" stroke="none"/><circle cx="18.25" cy="14" r=".85" fill="currentColor" stroke="none"/></svg></button>
+    <button class="rail-btn" data-view="homeworkbot" title="HomeworkBot" aria-label="HomeworkBot"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 18h5.6M10.3 21h3.4M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.2h5c0-.9.4-1.7 1.1-2.2A6 6 0 0 0 12 3Z"/></svg></button>
     <button class="rail-btn" data-view="changelog" title="Changelog" aria-label="Changelog"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5z"/><path d="M4 5.5v12M8 7h8M8 11h8M8 15h5"/></svg></button>
+    <button class="rail-btn rail-credit" data-view="credits" title="Credits" aria-label="Credits"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.7 13a4.9 4.9 0 0 1 7-6.9l.3.3.3-.3a4.9 4.9 0 0 1 7 6.9z"/></svg></button>
     <button class="rail-btn" id="toggle-diagnostics" title="Proxy diagnostics" aria-label="Proxy diagnostics"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v14H4zM8 9l3 3-3 3M13 15h4"/></svg></button>
     <div class="rail-spacer"></div>
     <button class="rail-btn" data-view="settings" title="Settings" aria-label="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 1.72l-.1.79a2 2 0 0 1-1.01 1.42l-.73.42a2 2 0 0 1-1.73.1l-.7-.29a2 2 0 0 0-2.45.92l-.22.38a2 2 0 0 0 .43 2.55l.6.5a2 2 0 0 1 .65 1.62v.84a2 2 0 0 1-.65 1.62l-.6.5a2 2 0 0 0-.43 2.55l.22.38a2 2 0 0 0 2.45.92l.7-.29a2 2 0 0 1 1.73.1l.73.42a2 2 0 0 1 1.01 1.42l.1.79a2 2 0 0 0 2 1.72h.44a2 2 0 0 0 2-1.72l.1-.79a2 2 0 0 1 1.01-1.42l.73-.42a2 2 0 0 1 1.73-.1l.7.29a2 2 0 0 0 2.45-.92l.22-.38a2 2 0 0 0-.43-2.55l-.6-.5a2 2 0 0 1-.65-1.62v-.84a2 2 0 0 1 .65-1.62l.6-.5a2 2 0 0 0 .43-2.55l-.22-.38a2 2 0 0 0-2.45-.92l-.7.29a2 2 0 0 1-1.73-.1l-.73-.42a2 2 0 0 1-1.01-1.42l-.1-.79a2 2 0 0 0-2-1.72z"/><circle cx="12" cy="12" r="3"/></svg></button>
     <button class="rail-btn" id="fullscreen-btn" title="Fullscreen" aria-label="Fullscreen"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+    <span class="rail-signature" aria-hidden="true">br4y</span>
   </aside>
 </div>
 <div class="version-label" id="silverite-version" role="note" aria-label="Silverite version 0.12.11.3.2" title="Silverite version 0.12.11.3.2">ver.0.12.11.3.2</div>
 <div class="preload-status" id="preload-status" hidden role="status" aria-live="polite">
   <span class="preload-status-dot" aria-hidden="true"></span>
   <span id="preload-status-text">PRELOADING ASSETS 0/372</span>
+</div>
+<div class="command-palette" id="command-palette" hidden>
+  <div class="command-backdrop" data-command-close></div>
+  <div class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="command-title">
+    <div class="command-search-row">
+      <svg class="icon command-search-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input class="command-input" id="command-input" type="text" placeholder="Search pages, tabs, games, and actions…" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="command-results">
+      <span class="command-key" aria-hidden="true">ESC</span>
+    </div>
+    <div class="command-results" id="command-results" role="listbox" aria-label="Command results"></div>
+    <div class="command-footer">
+      <span class="command-footer-title" id="command-title">SILVERITE COMMAND</span>
+      <span class="command-footer-hints" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> move <kbd>↵</kbd> run <kbd>esc</kbd> close</span>
+    </div>
+  </div>
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="app.js"></script>

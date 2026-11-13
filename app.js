@@ -77,6 +77,22 @@ const HOME_MESSAGES = [
   "bumm bum bummm bumm buummmmm",
   "no kitty this is mah pot pah!",
   "im so in love with you, your so in love with him, i dont know what to do",
+  "if your gonna be a skid, at least use claude - OrangeesDev",
+  "I MODDED IT, I MODDED IT!! GET MODDED BY ASPEN GET MODDED BY ASPEN - Aspen, 2026",
+  "stinky",
+  "",
+  "mei mei snow leopard",
+  "game on! - Coach",
+  "bonk",
+  "me is yay",
+  "Before you criticize someone, walk a mile in their shoes. That way, you'll be a mile from them, and you'll have their shoes. — Jack Hande",
+  "if someone tells you a secret, tell everyone else so you dont forget it - MrPotato0820",
+  "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe. - Albert Einstein",
+  "I love this mod, this is my favroite fnf mod, everything about it just great, im happy they updated the mod and gald that I played it - swaggotskills",
+  "when teach is serious but u pull the baldi",
+  "bumm bum bummm bumm buummmmm",
+  "no kitty this is mah pot pah!",
+  "im so in love with you, your so in love with him, i dont know what to do",
   "if your gonna be a skid, at least use claude - OrangeesDev"
 ];
 
@@ -274,9 +290,10 @@ let g4m3s = [...makeGameManifest(), ...makeCustomGameManifest()];
 const EXTERNAL_LIBRARY_CONFIG = {
   // All URLs use immutable commit hashes so upstream edits cannot silently swap code.
   gnMath: {
-    catalog: "https://cdn.jsdelivr.net/gh/gn-math/assets@0723b1b0d9f3baf5c277ad1e1f9b369889f7f66e/zones.json",
-    htmlRoot: "https://cdn.jsdelivr.net/gh/gn-math/html@5639f84d67456355a3c807a0f52b41c346b3385d/",
-    coversRoot: "https://cdn.jsdelivr.net/gh/gn-math/covers@f1aca13e4c305539f247194fd2ebbd2b42696e7b/"
+    // jsDelivr blocks the gn-math account, so these pinned commits are served through githack instead.
+    catalog: "https://raw.githack.com/gn-math/assets/0723b1b0d9f3baf5c277ad1e1f9b369889f7f66e/zones.json",
+    htmlRoot: "https://raw.githack.com/gn-math/html/5639f84d67456355a3c807a0f52b41c346b3385d/",
+    coversRoot: "https://raw.githack.com/gn-math/covers/f1aca13e4c305539f247194fd2ebbd2b42696e7b/"
   },
   ugs: {
     catalog: "https://cdn.jsdelivr.net/gh/bubbls/ugs-singlefile@6625addc037b2dcfa0086ffaeb314fd3c90c342f/games.js",
@@ -526,7 +543,7 @@ const $=(s,root=document)=>root.querySelector(s);
 const $$=(s,root=document)=>[...root.querySelectorAll(s)];
 const SETTINGS_KEY='silverite-settings-v2';
 const LEGACY_SETTINGS_KEY='silverite-settings-v1';
-const DEFAULT_SETTINGS={accent:'#f0f0f0',accentRgb:'240,240,240',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundStyle:'grid',backgroundImage:'',backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'scramjet',defaultTransport:'libcurl'};
+const DEFAULT_SETTINGS={accent:'#f0f0f0',accentRgb:'240,240,240',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundStyle:'grid',backgroundImage:'',backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'scramjet',defaultTransport:'libcurl',studiKey:'',studiEndpoint:'',studiModel:''};
 let userSettings={...DEFAULT_SETTINGS};
 try{
   const currentSettings=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
@@ -628,7 +645,7 @@ function renderg4m3s(){
     const matchesSearch=!q||g.name.toLowerCase().includes(q)||g.file.toLowerCase().includes(q)||source.toLowerCase().includes(q);
     return matchesLibrary&&matchesSearch;
   });
-  if(selectedGameLibrary==='ALL')list.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true}));
+  list.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true}));
   renderLibraryFilters();
   const shown=Math.min(list.length,(currentGamePage+1)*G4M3S_PAGE_SIZE);
   $('#game-count').textContent=`${list.length} G4M3S${shown<list.length?' · SHOWING '+shown:''}`;
@@ -663,15 +680,43 @@ function resolveAppBaseUrl(){
 }
 const APP_BASE_URL=resolveAppBaseUrl();
 function appUrl(path){return new URL(String(path).replace(/^\/+/,''),APP_BASE_URL).href}
+const DEFAULT_PROXY_RUNTIME_BASE='https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/';
+function normalizeProxyRuntimeBase(value){
+  try{
+    const url=new URL(String(value||DEFAULT_PROXY_RUNTIME_BASE));
+    if(!url.pathname.endsWith('/'))url.pathname+='/';
+    return url.href;
+  }catch(error){
+    return DEFAULT_PROXY_RUNTIME_BASE;
+  }
+}
+const requestedRuntimeBase=(()=>{
+  try{return new URL(document.baseURI).searchParams.get('runtimeBase');}
+  catch(error){return null;}
+})();
+const PROXY_RUNTIME_BASE=normalizeProxyRuntimeBase(
+  (typeof window!=='undefined'&&window.__SILVERITE_PROXY_RUNTIME_BASE__)||requestedRuntimeBase||DEFAULT_PROXY_RUNTIME_BASE
+);
+if(typeof window!=='undefined')window.__SILVERITE_PROXY_RUNTIME_BASE__=PROXY_RUNTIME_BASE;
+function proxyRuntimeUrl(path){return new URL(String(path).replace(/^\/+/,''),PROXY_RUNTIME_BASE).href}
 const TRANSPORT_CACHE_VERSION='2';
 function versionedUrl(href,version){
   const url=new URL(href);
   url.searchParams.set('v',version);
   return url.href;
 }
+function versionedRuntimeUrl(path,version=TRANSPORT_CACHE_VERSION){
+  return versionedUrl(proxyRuntimeUrl(path),version);
+}
+function proxyServiceWorkerUrl(){
+  const url=new URL(appUrl('sw.js'));
+  url.searchParams.set('runtimeBase',PROXY_RUNTIME_BASE);
+  url.searchParams.set('v',TRANSPORT_CACHE_VERSION);
+  return url.href;
+}
 function transportEndpoint(engine,kind){
   const path=engine==='ultraviolet'?(kind==='epoxy'?'uv-epoxy/index.mjs':'uv-libcurl/index.mjs'):(kind==='epoxy'?'epoxy/index.mjs':'libcurl/index.mjs');
-  return versionedUrl(appUrl(path),TRANSPORT_CACHE_VERSION);
+  return versionedRuntimeUrl(path);
 }
 const WISP_SERVER_URLS=['wss://wisp.mercurywork.shop/','wss://anura.pro/'];
 const WISP_CACHE_KEY='silverite.wispEndpoint';
@@ -746,9 +791,10 @@ function loadScramjetScript(src){
 }
 async function getProxyServiceWorker(){
   if(!window.isSecureContext||!('serviceWorker' in navigator))throw new Error('Proxy engines need localhost or an HTTPS site.');
-  logProxyDiagnostic('info',`Registering service worker: ${appUrl('sw.js')}`,`Scope: ${APP_BASE_URL.pathname}`);
+  const swUrl=proxyServiceWorkerUrl();
+  logProxyDiagnostic('info',`Registering service worker: ${swUrl}`,`Scope: ${APP_BASE_URL.pathname}`);
   let registration;
-  try{registration=await navigator.serviceWorker.register(appUrl('sw.js'),{scope:APP_BASE_URL.pathname,updateViaCache:'none'});}
+  try{registration=await navigator.serviceWorker.register(swUrl,{scope:APP_BASE_URL.pathname,updateViaCache:'none'});}
   catch(error){logProxyDiagnostic('error','Service worker registration failed',diagnosticText(error));throw error;}
   await navigator.serviceWorker.ready;
   await registration.update();
@@ -800,14 +846,14 @@ async function initializeScramjet(){
   if(scramjetBootPromise)return scramjetBootPromise;
   scramjetBootPromise=(async()=>{
     const serviceworker=await getProxyServiceWorker();
-    for(const src of ['scram/scramjet.js','controller/controller.api.js','utils/scramjet-utils.js'])await loadScramjetScript(appUrl(src));
+    for(const src of ['scram/scramjet.js','controller/controller.api.js','utils/scramjet-utils.js'])await loadScramjetScript(versionedRuntimeUrl(src));
     const transport=await createScramjetTransport(transportKind);
     const api=window.$scramjetController;
     if(!api?.Controller||!window.$scramjetUtils?.UrlWatcherPlugin)throw new Error('Scramjet runtime scripts did not initialize.');
     const controller=new api.Controller({
       serviceworker,
       transport,
-      config:{prefix:new URL('scramjet/',APP_BASE_URL).pathname,scramjetPath:appUrl('scram/scramjet.js'),wasmPath:appUrl('scram/scramjet.wasm'),injectPath:appUrl('controller/controller.inject.js')}
+      config:{prefix:new URL('scramjet/',APP_BASE_URL).pathname,scramjetPath:versionedRuntimeUrl('scram/scramjet.js'),wasmPath:versionedRuntimeUrl('scram/scramjet.wasm'),injectPath:versionedRuntimeUrl('controller/controller.inject.js')}
     });
     await controller.wait();
     if(!scramjetKeepalive)scramjetKeepalive=setInterval(()=>navigator.serviceWorker.controller?.postMessage('keepalive'),15000);
@@ -826,6 +872,16 @@ async function setUltravioletTransport(connection,kind){
     await connection.setTransport(retry.href,[{wisp:wispEndpoint()}]);
   }
 }
+let bareMuxWorkerBlobUrl=null;
+function getBareMuxWorkerPath(path){
+  try{
+    const url=new URL(path,APP_BASE_URL.href);
+    if(url.origin===location.origin)return url.href;
+    // SharedWorkers must be same-origin; import the remote worker from a blob wrapper.
+    if(!bareMuxWorkerBlobUrl)bareMuxWorkerBlobUrl=URL.createObjectURL(new Blob([`importScripts(${JSON.stringify(url.href)});`],{type:'application/javascript'}));
+    return bareMuxWorkerBlobUrl;
+  }catch(error){return path;}
+}
 async function initializeUltraviolet(){
   const transportKind=selectedTransportKind();
   if(ultravioletConnection){
@@ -835,10 +891,14 @@ async function initializeUltraviolet(){
   if(ultravioletBootPromise)return ultravioletBootPromise;
   ultravioletBootPromise=(async()=>{
     await getProxyServiceWorker();
-    for(const src of ['uv/uv.bundle.js','silverite-uv.config.js','baremux/index.js'])await loadScramjetScript(appUrl(src));
+    await loadScramjetScript(versionedRuntimeUrl('uv/uv.bundle.js'));
+    const uvConfigUrl=new URL(versionedRuntimeUrl('silverite-uv.config.js'));
+    uvConfigUrl.searchParams.set('runtimeBase',PROXY_RUNTIME_BASE);
+    await loadScramjetScript(uvConfigUrl.href);
+    await loadScramjetScript(versionedRuntimeUrl('baremux/index.js'));
     const BareMuxConnection=window.BareMux?.BareMuxConnection;
     if(!BareMuxConnection)throw new Error('Ultraviolet transport manager did not load.');
-    const connection=new BareMuxConnection(versionedUrl(appUrl('baremux/worker.js'),TRANSPORT_CACHE_VERSION));
+    const connection=new BareMuxConnection(getBareMuxWorkerPath(versionedRuntimeUrl('baremux/worker.js')));
     await setUltravioletTransport(connection,transportKind);
     ultravioletConnection=connection;
     ultravioletTransportKind=transportKind;
@@ -1149,6 +1209,10 @@ function applySettings(){
   userSettings.defaultTransport=userSettings.defaultTransport==='epoxy'?'epoxy':'libcurl';
   $('#default-engine').value=userSettings.defaultEngine;
   $('#default-transport').value=userSettings.defaultTransport;
+  if($('#studi-api-key'))$('#studi-api-key').value=userSettings.studiKey||'';
+  if($('#studi-endpoint'))$('#studi-endpoint').value=userSettings.studiEndpoint||'';
+  if($('#studi-model'))$('#studi-model').value=userSettings.studiModel||'';
+  updateStudiStatus();
   $('#cursor-style').value=userSettings.cursorStyle||'default';
   renderCursorCustomizer();
   $('#cursor-glow-enabled').checked=!!userSettings.cursorGlow;
@@ -1191,12 +1255,29 @@ async function loadChangelogs(){
       if(entry.date){const date=document.createElement('time');date.className='changelog-date';date.dateTime=entry.date;date.textContent=entry.date;heading.append(date);}
       article.append(heading);
       if(entry.title){const subtitle=document.createElement('p');subtitle.className='changelog-entry-title';subtitle.textContent=entry.title;article.append(subtitle);}
-      const changes=Array.isArray(entry.changes)?entry.changes:[entry.changes].filter(Boolean);
-      if(changes.length){const items=document.createElement('ul');items.className='changelog-changes';changes.forEach(change=>{const item=document.createElement('li');item.textContent=String(change);items.append(item);});article.append(items);}
+      const makeList=changes=>{const items=document.createElement('ul');items.className='changelog-changes';changes.forEach(change=>{const item=document.createElement('li');item.textContent=String(change);items.append(item);});return items;};
+      const sections=Array.isArray(entry.sections)?entry.sections.filter(section=>section&&Array.isArray(section.changes)&&section.changes.length):[];
+      if(sections.length){
+        const tabs=document.createElement('div');tabs.className='changelog-tabs';tabs.setAttribute('role','group');tabs.setAttribute('aria-label','Update categories');
+        const panels=document.createElement('div');panels.className='changelog-panels';
+        sections.forEach((section,sectionIndex)=>{
+          const tab=document.createElement('button');tab.type='button';tab.className='changelog-tab'+(sectionIndex===0?' is-active':'');tab.textContent=section.label||`Section ${sectionIndex+1}`;tab.setAttribute('aria-pressed',sectionIndex===0?'true':'false');
+          const panel=makeList(section.changes);panel.classList.add('changelog-panel');panel.hidden=sectionIndex!==0;
+          tab.addEventListener('click',()=>{
+            tabs.querySelectorAll('.changelog-tab').forEach((item,itemIndex)=>{item.classList.toggle('is-active',itemIndex===sectionIndex);item.setAttribute('aria-pressed',itemIndex===sectionIndex?'true':'false');});
+            panels.querySelectorAll('.changelog-panel').forEach((item,itemIndex)=>{item.hidden=itemIndex!==sectionIndex;});
+          });
+          tabs.append(tab);panels.append(panel);
+        });
+        article.append(tabs,panels);
+      }else{
+        const changes=Array.isArray(entry.changes)?entry.changes:[entry.changes].filter(Boolean);
+        if(changes.length)article.append(makeList(changes));
+      }
       list.append(article);
     });
     const noOlder=document.createElement('div');noOlder.className='changelog-empty changelog-no-older';noOlder.textContent='No older changelogs published yet.';noOlder.hidden=true;list.append(noOlder);
-    toggle.hidden=false;
+    toggle.hidden=entries.length<2;
     toggle.setAttribute('aria-expanded','false');toggle.textContent='View old changelogs';
   }catch(error){
     console.error('Could not load changelogs:',error);
@@ -1345,6 +1426,24 @@ $('#default-transport').addEventListener('change',e=>{
 });
 $('#reduce-motion').addEventListener('change',e=>updateSetting('reduceMotion',e.target.checked,{quiet:true}));
 $('#confirm-close-game').addEventListener('change',e=>updateSetting('confirmClose',e.target.checked));
+$('#studi-api-key')?.addEventListener('change',()=>{
+  userSettings.studiKey=$('#studi-api-key').value.trim();
+  persistSettings();
+  updateStudiStatus();
+  notify(userSettings.studiKey?'HomeworkBot key saved in this browser.':'HomeworkBot key removed.');
+});
+$('#studi-endpoint')?.addEventListener('change',()=>{
+  const value=$('#studi-endpoint').value.trim();
+  userSettings.studiEndpoint=/^https?:\/\//i.test(value)?value:'';
+  persistSettings();
+  applySettings();
+  if(value&&!userSettings.studiEndpoint)notify('Use a full URL that starts with https://');
+});
+$('#studi-model')?.addEventListener('change',()=>{
+  userSettings.studiModel=$('#studi-model').value.trim();
+  persistSettings();
+  updateStudiStatus();
+});
 $('#reset-settings').addEventListener('click',resetSettings);
 
 // Settings section navigation: jump to a category and keep the current one highlighted.
@@ -1370,15 +1469,932 @@ $('#reload-btn').addEventListener('click',()=>{if(activeView==='proxy'){const ta
 $('#toggle-left').addEventListener('click',()=>{const rail=$('#left-rail');rail.classList.toggle('hidden');document.querySelector('.workspace').classList.toggle('left-hidden',rail.classList.contains('hidden'));});
 $('#address-bar').addEventListener('input',()=>{const tab=proxyTabs.find(item=>item.id===activeProxyTabId);if(tab)tab.address=$('#address-bar').value;});
 $('#fullscreen-btn').addEventListener('click',()=>{if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()});
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();go('g4m3s');$('#game-search').focus()}if(e.key==='Escape'&&activeView==='player'&&!document.fullscreenElement)closeGame();});
+$('#home-message')?.addEventListener('click',cycleHomeMessage);
+$('#home-message')?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cycleHomeMessage();}});
+$('#secret-cat')?.addEventListener('click',playSecretCat);
+document.addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&!e.altKey&&e.key.toLowerCase()==='k'){e.preventDefault();toggleCommandPalette();return;}
+  if(e.key==='Escape'&&commandPaletteOpen){e.preventDefault();closeCommandPalette();return;}
+  if(e.key==='Escape'&&activeView==='player'&&!document.fullscreenElement)closeGame();
+});
+function homeMessageChoices(){
+  return Array.isArray(HOME_MESSAGES)
+    ? HOME_MESSAGES.filter(message => typeof message === 'string' && message.trim()).map(message => message.trim())
+    : [];
+}
+let homeMessageCombo = 0;
+let homeMessageTimer = 0;
+function hideHomeCombo(){
+  const combo = $('#home-combo');
+  if(!combo)return;
+  combo.classList.remove('is-visible');
+  combo.textContent = '';
+}
+function showHomeCombo(count){
+  const combo = $('#home-combo');
+  if(!combo)return;
+  combo.textContent = `COMBO ×${count}`;
+  combo.classList.remove('is-visible');
+  void combo.offsetWidth;
+  combo.classList.add('is-visible');
+}
 function renderHomeMessage(){
   const element = $('#home-message');
   if(!element)return;
-  const choices = Array.isArray(HOME_MESSAGES)
-    ? HOME_MESSAGES.filter(message => typeof message === 'string' && message.trim())
-    : [];
+  const choices = homeMessageChoices();
   if(!choices.length){element.hidden = true;return;}
-  element.textContent = choices[Math.floor(Math.random() * choices.length)].trim();
+  element.hidden = false;
+  element.textContent = choices[Math.floor(Math.random() * choices.length)];
+  homeMessageCombo = 0;
+  hideHomeCombo();
+}
+function cycleHomeMessage(){
+  const element = $('#home-message');
+  if(!element || element.hidden)return;
+  const choices = homeMessageChoices();
+  if(choices.length < 2)return;
+  const current = element.textContent.trim();
+  const next = choices[Math.floor(Math.random() * choices.length)];
+  clearTimeout(homeMessageTimer);
+  if(next === current){
+    // Landing on the same message again builds a combo instead of silently doing nothing.
+    homeMessageCombo += 1;
+    element.classList.remove('home-message--swap');
+    void element.offsetWidth;
+    element.classList.add('home-message--combo');
+    showHomeCombo(homeMessageCombo + 1);
+    homeMessageTimer = setTimeout(()=>{
+      element.classList.remove('home-message--combo');
+      hideHomeCombo();
+    },1250);
+    return;
+  }
+  homeMessageCombo = 0;
+  hideHomeCombo();
+  element.classList.remove('home-message--combo');
+  element.classList.remove('home-message--swap');
+  void element.offsetWidth;
+  element.textContent = next;
+  element.classList.add('home-message--swap');
+  homeMessageTimer = setTimeout(()=>element.classList.remove('home-message--swap'),480);
+}
+function spawnSecretCatHearts(cat){
+  if(!cat)return;
+  const host = $('#secret-cat-hearts') || cat;
+  for(let i=0;i<6;i++){
+    const heart = document.createElement('span');
+    heart.className = 'secret-cat-heart';
+    heart.textContent = '♥';
+    heart.style.setProperty('--heart-x', `${Math.round(Math.random() * 54 - 27)}px`);
+    heart.style.setProperty('--heart-delay', `${Math.round(i * 90 + Math.random() * 90)}ms`);
+    heart.style.setProperty('--heart-size', `${Math.round(8 + Math.random() * 7)}px`);
+    heart.addEventListener('animationend', ()=>heart.remove(), {once:true});
+    host.append(heart);
+  }
+}
+let secretCatTimer = 0;
+let secretCatClicks = 0;
+let secretCatExploding = false;
+let secretCatAudio = null;
+const SECRET_CAT_EXPLODE_AT = 10;
+function secretCatSound(){
+  if(!secretCatAudio){
+    secretCatAudio = new Audio('assets/secret/deltarune-explosion.mp3');
+    secretCatAudio.preload = 'auto';
+    secretCatAudio.volume = .8;
+  }
+  return secretCatAudio;
+}
+function primeSecretCatSound(){
+  const audio = secretCatSound();
+  try{
+    audio.volume = 0;
+    const started = audio.play();
+    if(started && started.then){
+      started.then(()=>{audio.pause();audio.currentTime = 0;audio.volume = .8;}).catch(()=>{audio.volume = .8;});
+    }else{
+      audio.pause();audio.currentTime = 0;audio.volume = .8;
+    }
+  }catch(error){audio.volume = .8;}
+}
+function spawnSecretCatParticles(cat){
+  const host = $('#secret-cat-hearts') || cat;
+  for(let i=0;i<24;i++){
+    const particle = document.createElement('span');
+    particle.className = 'secret-cat-particle';
+    const angle = Math.random() * Math.PI * 2;
+    const radius = 32 + Math.random() * 42;
+    particle.style.setProperty('--p-x', `${Math.cos(angle) * radius}px`);
+    particle.style.setProperty('--p-y', `${Math.sin(angle) * radius}px`);
+    particle.style.setProperty('--p-delay', `${Math.round(Math.random() * 700)}ms`);
+    particle.style.setProperty('--p-size', `${Math.round(2 + Math.random() * 4)}px`);
+    particle.addEventListener('animationend', ()=>particle.remove(), {once:true});
+    host.append(particle);
+  }
+}
+function resetSecretCatExplosion(cat, bubble){
+  cat.classList.remove('is-exploded');
+  cat.classList.add('is-respawning');
+  const explosion = $('#secret-cat-explosion');
+  if(explosion){explosion.hidden = true;explosion.classList.remove('is-firing');explosion.onanimationend = null;}
+  const row = cat.closest('.settings-footer-row');
+  if(row)row.classList.remove('is-shaking');
+  if(bubble)bubble.textContent = '...';
+  setTimeout(()=>{
+    cat.classList.remove('is-respawning');
+    if(bubble && bubble.textContent === '...')bubble.textContent = '';
+    secretCatExploding = false;
+  },700);
+}
+function explodeSecretCat(cat){
+  secretCatExploding = true;
+  secretCatClicks = 0;
+  const bubble = $('#secret-cat-bubble');
+  if(bubble)bubble.textContent = 'uh oh...';
+  primeSecretCatSound();
+  clearTimeout(secretCatTimer);
+  cat.classList.remove('is-playing');
+  void cat.offsetWidth;
+  cat.classList.add('is-charging');
+  spawnSecretCatParticles(cat);
+  secretCatTimer = setTimeout(()=>{
+    cat.classList.remove('is-charging');
+    cat.classList.add('is-exploded');
+    const audio = secretCatSound();
+    try{
+      audio.currentTime = 0;
+      audio.volume = .85;
+      const started = audio.play();
+      if(started && started.catch)started.catch(()=>{});
+    }catch(error){}
+    const explosion = $('#secret-cat-explosion');
+    if(explosion){
+      explosion.hidden = false;
+      explosion.classList.remove('is-firing');
+      void explosion.offsetWidth;
+      explosion.classList.add('is-firing');
+      // The GIF loops forever, so hide it as soon as our single-play animation ends.
+      explosion.onanimationend = event=>{
+        if(event.animationName !== 'secret-cat-explosion')return;
+        explosion.hidden = true;
+        explosion.classList.remove('is-firing');
+        explosion.onanimationend = null;
+      };
+      // Reduced-motion modes skip the animation, so hide the looping GIF on a timer too.
+      setTimeout(()=>{
+        if(explosion.hidden)return;
+        explosion.hidden = true;
+        explosion.classList.remove('is-firing');
+      }, 1750);
+    }
+    const row = cat.closest('.settings-footer-row');
+    if(row){row.classList.remove('is-shaking');void row.offsetWidth;row.classList.add('is-shaking');}
+    secretCatTimer = setTimeout(()=>resetSecretCatExplosion(cat, bubble), 2400);
+  }, 1800);
+}
+function playSecretCat(){
+  const cat = $('#secret-cat');
+  if(!cat || secretCatExploding)return;
+  secretCatClicks += 1;
+  if(secretCatClicks >= SECRET_CAT_EXPLODE_AT){explodeSecretCat(cat);return;}
+  const bubble = $('#secret-cat-bubble');
+  const remaining = SECRET_CAT_EXPLODE_AT - secretCatClicks;
+  const lines = remaining <= 3
+    ? ['careful...','stop that...','too much...','uh oh...']
+    : ['mrrp!','purr...','meow :3','prrrr','nyaa~','mrrow?'];
+  if(bubble)bubble.textContent = lines[Math.floor(Math.random() * lines.length)];
+  cat.classList.remove('is-playing');
+  void cat.offsetWidth;
+  cat.classList.add('is-playing');
+  spawnSecretCatHearts(cat);
+  clearTimeout(secretCatTimer);
+  secretCatTimer = setTimeout(()=>cat.classList.remove('is-playing'),2600);
+}
+
+/* ===== COMMAND PALETTE =====
+   Ctrl/Cmd+K opens a launcher that can jump between pages and settings,
+   switch proxy tabs, run quick actions, and open any game in the library. */
+const COMMAND_RESULT_LIMIT=50;
+let commandPaletteOpen=false;
+let commandResults=[];
+let commandSelectedIndex=0;
+let commandReturnFocus=null;
+
+function commandMatch(query,text){
+  const haystack=String(text||'');
+  if(!query)return {score:0,indices:[]};
+  const needle=query.toLowerCase();
+  const lower=haystack.toLowerCase();
+  const direct=lower.indexOf(needle);
+  if(direct>=0){
+    const indices=[];
+    for(let i=0;i<needle.length;i++)indices.push(direct+i);
+    return {score:1000-direct*3+(direct===0?250:0),indices};
+  }
+  const indices=[];
+  let cursor=0,score=0,streak=0;
+  for(let i=0;i<needle.length;i++){
+    const found=lower.indexOf(needle[i],cursor);
+    if(found<0)return null;
+    if(indices.length&&found===indices[indices.length-1]+1){streak+=1;score+=8+streak*3;}
+    else{streak=0;score+=2;}
+    if(found===0||/[^a-z0-9]/.test(lower[found-1]))score+=9;
+    indices.push(found);
+    cursor=found+1;
+  }
+  score-=Math.min(14,(lower.length-needle.length)/12);
+  return {score,indices};
+}
+
+function highlightCommandLabel(label,indices){
+  const marks=new Set(indices||[]);
+  let html='',open=false;
+  for(let i=0;i<label.length;i++){
+    const on=marks.has(i);
+    if(on&&!open){html+='<mark>';open=true;}
+    if(!on&&open){html+='</mark>';open=false;}
+    html+=escapeHTML(label[i]);
+  }
+  if(open)html+='</mark>';
+  return html;
+}
+
+function commandBaseItems(){
+  const navigation=[
+    {id:'nav-proxy',label:'Open Proxy home',meta:'Page · browse the web',icon:'home',keywords:'start browser proxy home',run:()=>go('proxy')},
+    {id:'nav-games',label:'Browse g4m3s',meta:'Page · game library',icon:'gamepad',keywords:'library catalog games',run:()=>go('g4m3s')},
+    {id:'nav-homework',label:'Open HomeworkBot',meta:'Page · Studi 1.0 study helper',icon:'zap',keywords:'homework study quiz help ai studi',run:()=>go('homeworkbot')},
+    {id:'nav-changelog',label:'View Changelog',meta:'Page · build history',icon:'grid',keywords:'updates releases history',run:()=>go('changelog')},
+    {id:'nav-credits',label:'View Credits',meta:'Page · people behind Silverite',icon:'heart',keywords:'thanks about team',run:()=>go('credits')},
+    {id:'nav-settings',label:'Open Settings',meta:'Page · preferences',icon:'settings',keywords:'options config preferences',run:()=>go('settings')}
+  ];
+  const actions=[
+    {id:'action-new-tab',label:'New proxy tab',meta:'Action · open a fresh tab',icon:'plus',keywords:'browser add',run:addProxyTab},
+    {id:'action-search-games',label:'Search g4m3s',meta:'Action · focus the game search',icon:'search',keywords:'find game library',run:()=>{go('g4m3s');$('#game-search')?.focus();}},
+    {id:'action-sidebar',label:'Toggle sidebar',meta:'Action · show or hide proxy tabs',icon:'panel',keywords:'rail left tabs hide show',run:()=>$('#toggle-left')?.click()},
+    {id:'action-reload',label:'Reload current page',meta:'Action · refresh the active view',icon:'reload',keywords:'refresh reload',run:()=>$('#reload-btn')?.click()},
+    {id:'action-diagnostics',label:'Toggle proxy diagnostics',meta:'Action · read-only logs',icon:'terminal',keywords:'logs debug console troubleshooting',run:()=>$('#toggle-diagnostics')?.click()},
+    {id:'action-fullscreen',label:'Toggle fullscreen',meta:'Action · fill the screen',icon:'expand',keywords:'display screen',run:()=>$('#fullscreen-btn')?.click()}
+  ];
+  const settingsSections=[['appearance','Appearance'],['interface','Interface'],['proxy','Proxy'],['advanced','Advanced']].map(([key,label])=>({
+    id:`settings-${key}`,label:`Settings · ${label}`,meta:'Jump to settings section',icon:'settings',keywords:`preferences ${key}`,
+    run:()=>{
+      go('settings');
+      const target=$(`#settings-${key}`);
+      target?.scrollIntoView({behavior:userSettings.reduceMotion?'auto':'smooth',block:'start'});
+    }
+  }));
+  const tabs=proxyTabs.map(tab=>({
+    id:`proxy-tab-${tab.id}`,label:tab.title||'New Tab',meta:tab.address||'Proxy tab',icon:'globe',keywords:`tab ${tab.address||''}`,
+    run:()=>activateProxyTab(tab.id)
+  }));
+  return {navigation,actions,settingsSections,tabs};
+}
+
+function commandGameItem(game,metaPrefix='Game'){
+  return {
+    id:`game-${game.name}`,label:game.name,
+    meta:game.source?`${metaPrefix} · ${game.source}`:metaPrefix,
+    icon:'gamepad',keywords:game.file||'',run:()=>openGame(game.name)
+  };
+}
+
+let commandGameCache={length:-1,items:[]};
+function commandGames(){
+  if(commandGameCache.length!==g4m3s.length){
+    commandGameCache={length:g4m3s.length,items:g4m3s.map(game=>commandGameItem(game))};
+  }
+  return commandGameCache.items;
+}
+
+function buildCommandResults(rawQuery){
+  const query=rawQuery.trim();
+  const {navigation,actions,settingsSections,tabs}=commandBaseItems();
+  if(!query){
+    const groups=[];
+    const append=(title,items)=>{if(items.length)groups.push({title,items});};
+    append('NAVIGATE',navigation);
+    append('ACTIONS',actions);
+    append('SETTINGS',settingsSections);
+    append('OPEN TABS',tabs.slice(0,6));
+    append('FAVORITES',g4m3s.filter(game=>favorites.has(game.name)).slice(0,6).map(game=>commandGameItem(game,'Favorite')));
+    return groups;
+  }
+  const candidates=[...navigation,...actions,...settingsSections,...tabs,...commandGames()];
+  const scored=[];
+  for(const item of candidates){
+    const match=commandMatch(query,`${item.label} ${item.meta||''} ${item.keywords||''}`);
+    if(!match)continue;
+    const labelMatch=commandMatch(query,item.label);
+    scored.push({...item,score:match.score,labelIndices:labelMatch?labelMatch.indices:[]});
+  }
+  scored.sort((a,b)=>b.score-a.score);
+  return [{title:'RESULTS',items:scored.slice(0,COMMAND_RESULT_LIMIT)}];
+}
+
+function renderCommandResults(){
+  const list=$('#command-results');
+  if(!list)return;
+  const groups=buildCommandResults($('#command-input')?.value||'');
+  commandResults=[];
+  let html='';
+  for(const group of groups){
+    html+=`<div class="command-group" role="presentation">${escapeHTML(group.title)}</div>`;
+    for(const item of group.items){
+      const index=commandResults.length;
+      commandResults.push(item);
+      const selected=index===commandSelectedIndex;
+      html+=`<button class="command-item${selected?' is-selected':''}" type="button" role="option" id="command-option-${index}" data-command-index="${index}" aria-selected="${selected?'true':'false'}">
+        <span class="command-item-icon">${svgIcon(item.icon||'grid',15)}</span>
+        <span class="command-item-copy"><span class="command-item-label">${highlightCommandLabel(item.label,item.labelIndices)}</span><span class="command-item-meta">${escapeHTML(item.meta||'')}</span></span>
+        ${item.hint?`<span class="command-item-hint">${escapeHTML(item.hint)}</span>`:''}
+      </button>`;
+    }
+  }
+  if(!commandResults.length){
+    html=`<div class="command-empty">No matches for “${escapeHTML($('#command-input')?.value.trim()||'')}”.<br>Try a page, tab, game, or action.</div>`;
+  }
+  list.innerHTML=html;
+  updateCommandSelection(false);
+}
+
+function updateCommandSelection(scroll=true){
+  const list=$('#command-results');
+  if(!list)return;
+  const options=$$('.command-item',list);
+  if(!options.length){commandSelectedIndex=0;$('#command-input')?.removeAttribute('aria-activedescendant');return;}
+  commandSelectedIndex=Math.max(0,Math.min(commandSelectedIndex,options.length-1));
+  options.forEach((option,index)=>{
+    const selected=index===commandSelectedIndex;
+    option.classList.toggle('is-selected',selected);
+    option.setAttribute('aria-selected',selected?'true':'false');
+    if(selected){
+      $('#command-input')?.setAttribute('aria-activedescendant',option.id);
+      if(scroll)option.scrollIntoView({block:'nearest'});
+    }
+  });
+}
+
+function runCommand(index){
+  const item=commandResults[index];
+  if(!item)return;
+  closeCommandPalette();
+  // Let the palette finish closing before a command moves focus or changes views.
+  setTimeout(()=>{
+    try{item.run();}
+    catch(error){console.error('Command failed:',error);notify('That command could not run.');}
+  },0);
+}
+
+function openCommandPalette(){
+  const palette=$('#command-palette');
+  if(!palette||commandPaletteOpen)return;
+  commandPaletteOpen=true;
+  commandReturnFocus=document.activeElement;
+  palette.hidden=false;
+  document.body.classList.add('command-open');
+  const input=$('#command-input');
+  if(input)input.value='';
+  commandSelectedIndex=0;
+  renderCommandResults();
+  requestAnimationFrame(()=>input?.focus());
+}
+
+function closeCommandPalette(){
+  const palette=$('#command-palette');
+  if(!palette||!commandPaletteOpen)return;
+  commandPaletteOpen=false;
+  palette.hidden=true;
+  document.body.classList.remove('command-open');
+  const previous=commandReturnFocus;
+  commandReturnFocus=null;
+  if(previous&&typeof previous.focus==='function'){
+    try{previous.focus({preventScroll:true});}catch(error){}
+  }
+}
+
+function toggleCommandPalette(){
+  if(commandPaletteOpen)closeCommandPalette();
+  else openCommandPalette();
+}
+
+$('#command-hint')?.addEventListener('click',openCommandPalette);
+$('#command-palette')?.addEventListener('click',event=>{if(event.target.closest('[data-command-close]'))closeCommandPalette();});
+$('#command-input')?.addEventListener('input',()=>{commandSelectedIndex=0;renderCommandResults();});
+$('#command-input')?.addEventListener('keydown',event=>{
+  if(event.key==='ArrowDown'){event.preventDefault();commandSelectedIndex+=1;updateCommandSelection();}
+  else if(event.key==='ArrowUp'){event.preventDefault();commandSelectedIndex-=1;updateCommandSelection();}
+  else if(event.key==='Home'){event.preventDefault();commandSelectedIndex=0;updateCommandSelection();}
+  else if(event.key==='End'){event.preventDefault();commandSelectedIndex=commandResults.length-1;updateCommandSelection();}
+  else if(event.key==='Enter'){event.preventDefault();runCommand(commandSelectedIndex);}
+  else if(event.key==='Escape'){event.preventDefault();closeCommandPalette();}
+  else if(event.key==='Tab'){event.preventDefault();commandSelectedIndex+=event.shiftKey?-1:1;updateCommandSelection();}
+});
+$('#command-results')?.addEventListener('click',event=>{
+  const option=event.target.closest('[data-command-index]');
+  if(option)runCommand(Number(option.dataset.commandIndex));
+});
+$('#command-results')?.addEventListener('mousemove',event=>{
+  const option=event.target.closest('[data-command-index]');
+  if(!option)return;
+  const index=Number(option.dataset.commandIndex);
+  if(index!==commandSelectedIndex){commandSelectedIndex=index;updateCommandSelection(false);}
+});
+(function setCommandHintKey(){
+  const key=$('#command-hint-key');
+  if(!key)return;
+  const platform=(navigator.userAgentData?.platform||navigator.platform||navigator.userAgent||'');
+  key.textContent=/mac|iphone|ipad|ipod/i.test(platform)?'⌘K':'CTRL K';
+})();
+
+/* ===== HOMEWORKBOT / STUDI 1.0 =====
+   Normal mode keeps answers short. Study mode explains more and can quiz.
+   Math, unit conversions, and quizzes run on-device; anything else uses the
+   optional model endpoint from Settings -> HomeworkBot. */
+const STUDI_MAX_IMAGE_BYTES=6*1024*1024;
+let studiMode='normal';
+let studiBusy=false;
+let studiPendingImage='';
+let studiPendingImageName='';
+const studiHistory=[];
+
+function studiNumber(value){
+  if(!Number.isFinite(value))return 'undefined';
+  if(Number.isInteger(value))return String(value);
+  return String(Math.round(value*1e6)/1e6);
+}
+
+function studiFormat(text){
+  const inline=line=>line.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>').replace(/`([^`]+)`/g,'<code>$1</code>');
+  const lines=escapeHTML(String(text||'')).split(/\r?\n/);
+  let html='',bullets='';
+  const flush=()=>{if(bullets){html+=`<ul>${bullets}</ul>`;bullets='';}};
+  for(const line of lines){
+    const bullet=line.match(/^\s*[-*•]\s+(.*)$/);
+    if(bullet){bullets+=`<li>${inline(bullet[1])}</li>`;continue;}
+    flush();
+    if(line.trim())html+=`<p>${inline(line)}</p>`;
+  }
+  flush();
+  return html||'<p></p>';
+}
+
+function studiAddMessage(role,content,{raw=false,image=''}={}){
+  const log=$('#studi-log');
+  if(!log)return null;
+  const message=document.createElement('div');
+  message.className=`studi-msg studi-msg--${role}`;
+  message.innerHTML=`<div class="studi-msg-avatar">${role==='bot'?svgIcon('zap',14):'YOU'}</div>`;
+  const body=document.createElement('div');
+  body.className='studi-msg-body';
+  body.innerHTML=raw?content:studiFormat(content);
+  if(image){
+    const picture=document.createElement('img');
+    picture.className='studi-msg-image';
+    picture.src=image;
+    picture.alt='Attached homework';
+    body.appendChild(picture);
+  }
+  message.appendChild(body);
+  log.appendChild(message);
+  log.scrollTop=log.scrollHeight;
+  return message;
+}
+
+function studiConnected(){
+  return Boolean(String(userSettings.studiEndpoint||'').trim()&&String(userSettings.studiKey||'').trim());
+}
+
+function updateStudiStatus(){
+  const connected=studiConnected();
+  $('.studi-badge')?.classList.toggle('is-online',connected);
+  const status=$('#studi-status');
+  if(status)status.textContent=connected?'MODEL CONNECTED':'OFFLINE READY';
+  const note=$('#studi-engine-note');
+  if(note)note.textContent=connected?`using ${userSettings.studiModel||'your model'}`:'works offline';
+}
+
+function setStudiMode(mode){
+  studiMode=mode==='study'?'study':'normal';
+  $$('.studi-mode').forEach(button=>{
+    const on=button.dataset.studiMode===studiMode;
+    button.classList.toggle('is-active',on);
+    button.setAttribute('aria-selected',on?'true':'false');
+  });
+  const input=$('#studi-input');
+  if(input)input.placeholder=studiMode==='study'?'Ask for a quiz or a deeper explanation…':'Ask a question, or attach a photo…';
+}
+
+/* --- on-device math --- */
+function studiParseMath(source,steps){
+  const src=String(source||'').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/[−–]/g,'-').replace(/,/g,'').replace(/\s+/g,'');
+  if(!src||!/\d/.test(src)||/[^0-9.+\-*/%^()]/.test(src))return null;
+  let i=0;
+  const record=(left,op,right,value)=>{
+    if(!steps)return;
+    const symbol=op==='*'?'×':op==='/'?'÷':op==='-'?'−':op;
+    steps.push(`${studiNumber(left)} ${symbol} ${studiNumber(right)} = ${studiNumber(value)}`);
+  };
+  function expression(){
+    let value=term();
+    for(;;){
+      const op=src[i];
+      if(op!=='+'&&op!=='-')return value;
+      i++;
+      const right=term();
+      const next=op==='+'?value+right:value-right;
+      record(value,op,right,next);
+      value=next;
+    }
+  }
+  function term(){
+    let value=factor();
+    for(;;){
+      const op=src[i];
+      if(op!=='*'&&op!=='/'&&op!=='%')return value;
+      i++;
+      const right=factor();
+      const next=op==='*'?value*right:op==='/'?value/right:value%right;
+      record(value,op,right,next);
+      value=next;
+    }
+  }
+  function factor(){
+    let value=unary();
+    if(src[i]==='^'){
+      i++;
+      const right=factor();
+      record(value,'^',right,Math.pow(value,right));
+      value=Math.pow(value,right);
+    }
+    return value;
+  }
+  function unary(){
+    if(src[i]==='+'){i++;return unary();}
+    if(src[i]==='-'){i++;return -unary();}
+    return primary();
+  }
+  function primary(){
+    if(src[i]==='('){
+      i++;
+      const value=expression();
+      if(src[i]===')')i++;
+      return value;
+    }
+    const start=i;
+    while(i<src.length&&/[0-9.]/.test(src[i]))i++;
+    if(i===start)throw new Error('math');
+    return Number(src.slice(start,i));
+  }
+  try{
+    const value=expression();
+    if(i!==src.length||!Number.isFinite(value))return null;
+    return value;
+  }catch(error){return null;}
+}
+
+function studiLinear(expr){
+  const clean=String(expr||'').replace(/\s+/g,'').replace(/\*/g,'');
+  if(!clean||/[^0-9xX+\-./]/.test(clean))return null;
+  const terms=clean.replace(/-/g,'+-').split('+').filter(term=>term!=='');
+  let a=0,b=0;
+  for(const term of terms){
+    const lower=term.toLowerCase();
+    if(lower.includes('x')){
+      if(lower.split('x').length!==2)return null;
+      const text=lower.replace('x','');
+      const coefficient=text===''||text==='+'?1:text==='-'?-1:Number(text);
+      if(!Number.isFinite(coefficient))return null;
+      a+=coefficient;
+    }else{
+      const value=studiParseMath(term);
+      if(value===null)return null;
+      b+=value;
+    }
+  }
+  return {a,b};
+}
+
+function studiSolveEquation(text){
+  const cleaned=String(text||'')
+    .replace(/^\s*(solve|find\s+x|what\s+is\s+x|what'?s\s+x)\b[:\s]*/i,'')
+    .replace(/[?.!]+\s*$/,'')
+    .trim();
+  if(!cleaned.includes('='))return null;
+  const parts=cleaned.split('=');
+  if(parts.length!==2)return null;
+  const left=studiLinear(parts[0]),right=studiLinear(parts[1]);
+  if(!left||!right)return null;
+  const a=left.a-right.a,b=right.b-left.b;
+  if(a===0)return null;
+  return {a,b,x:b/a};
+}
+
+function studiPercent(text){
+  const match=String(text||'').match(/([\d.]+)\s*(?:%|percent)\s*(?:of)\s*([\d.]+)/i);
+  if(!match)return null;
+  const percent=Number(match[1]),whole=Number(match[2]);
+  if(!Number.isFinite(percent)||!Number.isFinite(whole))return null;
+  return {percent,whole,value:(percent/100)*whole};
+}
+
+const STUDI_UNITS={
+  length:{m:1,mm:0.001,cm:0.01,km:1000,in:0.0254,inch:0.0254,inches:0.0254,ft:0.3048,foot:0.3048,feet:0.3048,yd:0.9144,mi:1609.344,mile:1609.344,miles:1609.344},
+  mass:{g:1,mg:0.001,kg:1000,oz:28.349523125,lb:453.59237,pound:453.59237,pounds:453.59237},
+  volume:{l:1,ml:0.001,cl:0.01,cup:0.2365882365,cups:0.2365882365,pt:0.473176473,qt:0.946352946,gal:3.785411784,gallon:3.785411784,gallons:3.785411784},
+  time:{s:1,sec:1,secs:1,second:1,seconds:1,min:60,mins:60,minute:60,minutes:60,h:3600,hr:3600,hrs:3600,hour:3600,hours:3600,day:86400,days:86400}
+};
+
+function studiConvert(text){
+  const clean=String(text||'').replace(/^\s*(convert|change)\s+/i,'').replace(/[?.!]+\s*$/,'').trim();
+  const match=clean.match(/^(-?[\d.]+)\s*([a-z°]+)\s*(?:to|into|in)\s*([a-z°]+)$/i);
+  if(!match)return null;
+  const value=Number(match[1]);
+  if(!Number.isFinite(value))return null;
+  const from=match[2].replace(/[°\s]/g,'').toLowerCase();
+  const to=match[3].replace(/[°\s]/g,'').toLowerCase();
+  const temps=['c','celsius','f','fahrenheit','k','kelvin'];
+  if(temps.includes(from)&&temps.includes(to)){
+    const toCelsius=from==='c'||from==='celsius'?value:from==='f'||from==='fahrenheit'?(value-32)*5/9:value-273.15;
+    const result=to==='c'||to==='celsius'?toCelsius:to==='f'||to==='fahrenheit'?toCelsius*9/5+32:toCelsius+273.15;
+    return {category:'temperature',from,to,value,result,rate:null};
+  }
+  for(const [category,units] of Object.entries(STUDI_UNITS)){
+    if(units[from]!==undefined&&units[to]!==undefined){
+      const rate=units[from]/units[to];
+      return {category,from,to,value,result:value*rate,rate};
+    }
+  }
+  return null;
+}
+
+function studiExtractExpression(text){
+  return String(text||'')
+    .replace(/^\s*(what(?:'s| is)|whats|calculate|compute|evaluate|solve|how much is|find)\s+/i,'')
+    .replace(/[?.!]+\s*$/,'')
+    .trim();
+}
+
+function studiMakeQuiz(){
+  const questions=[];
+  const seen=new Set();
+  const rand=(min,max)=>Math.floor(Math.random()*(max-min+1))+min;
+  const add=(prompt,answer,how)=>{
+    if(seen.has(prompt)||questions.length>=5)return;
+    seen.add(prompt);
+    questions.push({prompt,answer,how});
+  };
+  let guard=0;
+  while(questions.length<5&&guard++<80){
+    const kind=rand(1,5);
+    if(kind===1){const a=rand(14,89),b=rand(14,89);add(`${a} + ${b} =`,studiNumber(a+b),'Add the ones first, then the tens.');}
+    else if(kind===2){const a=rand(41,99),b=rand(11,39);add(`${a} − ${b} =`,studiNumber(a-b),'Line up the digits and subtract.');}
+    else if(kind===3){const a=rand(4,12),b=rand(4,12);add(`${a} × ${b} =`,studiNumber(a*b),'Split one number into tens and ones.');}
+    else if(kind===4){const b=rand(2,12),q=rand(2,12);add(`${b*q} ÷ ${b} =`,studiNumber(q),'Ask how many times the divisor fits.');}
+    else{const percent=[10,20,25,50][rand(0,3)],whole=rand(2,20)*20;add(`${percent}% of ${whole} =`,studiNumber((percent/100)*whole),`${percent}% = ${percent/100}, so multiply by ${whole}.`);}
+  }
+  return questions;
+}
+
+function studiQuizHtml(){
+  const questions=studiMakeQuiz();
+  const list=questions.map(question=>`<li>${escapeHTML(question.prompt)}</li>`).join('');
+  const answers=questions.map(question=>`<li>${escapeHTML(question.prompt)} <b>${escapeHTML(question.answer)}</b> <span class="studi-note">${escapeHTML(question.how)}</span></li>`).join('');
+  return `<p>Quick quiz — five questions. Try them first, then check.</p><ol>${list}</ol><button class="studi-reveal" type="button" data-studi-reveal>SHOW ANSWERS</button><ol class="studi-answers" hidden>${answers}</ol>`;
+}
+
+function studiOfflineAnswer(text){
+  const trimmed=String(text||'').trim();
+  if(!trimmed)return null;
+
+  if(/^(quiz|quiz me|test me|practice|give me a quiz|make a quiz)\b/i.test(trimmed)){
+    if(studiMode!=='study'){
+      setStudiMode('study');
+      return {html:`<p>Switched you to <b>Study</b> mode.</p>${studiQuizHtml()}`};
+    }
+    return {html:studiQuizHtml()};
+  }
+
+  const equation=studiSolveEquation(trimmed);
+  if(equation&&Number.isFinite(equation.x)){
+    if(studiMode==='study'){
+      return {html:`<p>Solve <b>${escapeHTML(studiExtractExpression(trimmed))}</b>.</p><ol><li>Get the x alone: <b>${studiNumber(equation.a)}x = ${studiNumber(equation.b)}</b></li><li>Divide both sides by ${studiNumber(equation.a)}: <b>x = ${studiNumber(equation.x)}</b></li></ol><p class="studi-note">Check by putting ${studiNumber(equation.x)} back in for x.</p>`};
+    }
+    return {html:`<p><span class="studi-answer">x = ${studiNumber(equation.x)}</span></p>`};
+  }
+
+  const percent=studiPercent(trimmed);
+  if(percent){
+    if(studiMode==='study'){
+      return {html:`<p>${studiNumber(percent.percent)}% means ${studiNumber(percent.percent)} out of 100, which is ${studiNumber(percent.percent/100)}.</p><p>${studiNumber(percent.percent/100)} × ${studiNumber(percent.whole)} = <span class="studi-answer">${studiNumber(percent.value)}</span></p>`};
+    }
+    return {html:`<p>${studiNumber(percent.percent)}% of ${studiNumber(percent.whole)} is <span class="studi-answer">${studiNumber(percent.value)}</span>.</p>`};
+  }
+
+  const conversion=studiConvert(trimmed);
+  if(conversion){
+    if(studiMode==='study'&&conversion.rate!==null){
+      return {html:`<p>1 ${escapeHTML(conversion.from)} ≈ ${studiNumber(conversion.rate)} ${escapeHTML(conversion.to)}.</p><p>${studiNumber(conversion.value)} × ${studiNumber(conversion.rate)} = <span class="studi-answer">${studiNumber(conversion.result)} ${escapeHTML(conversion.to)}</span></p>`};
+    }
+    return {html:`<p>${studiNumber(conversion.value)} ${escapeHTML(conversion.from)} = <span class="studi-answer">${studiNumber(conversion.result)} ${escapeHTML(conversion.to)}</span></p>`};
+  }
+
+  const expression=studiExtractExpression(trimmed);
+  const steps=[];
+  const value=studiParseMath(expression,steps);
+  if(value!==null){
+    if(studiMode==='study'){
+      const detail=steps.length?`<ol>${steps.map(step=>`<li>${escapeHTML(step)}</li>`).join('')}</ol>`:'';
+      return {html:`<p>${escapeHTML(expression)} = <span class="studi-answer">${studiNumber(value)}</span></p>${detail}<p class="studi-note">Do × and ÷ before + and −, and solve anything in parentheses first.</p>`};
+    }
+    return {html:`<p>${escapeHTML(expression)} = <span class="studi-answer">${studiNumber(value)}</span></p>`};
+  }
+
+  return null;
+}
+
+function studiSystemPrompt(){
+  const rules=[
+    'You are Studi 1.0, the homework helper built into Silverite.',
+    'Answer briefly and simply by default: usually one to three short sentences.',
+    'Give more detail only when the user asks for it.',
+    'Show steps when they make the answer easier to follow.',
+    'If the question is unclear, ask one short clarifying question.',
+    'Say when you are unsure instead of guessing.',
+    'Reply in the language the user writes in.',
+    'If asked to do something unsafe or to cheat on a graded test, decline briefly and offer to help them learn instead.'
+  ];
+  if(studiMode==='study')rules.push('Study mode is on: explain the reasoning in a few steps, then offer one short practice question.');
+  return rules.join(' ');
+}
+
+async function studiAskModel(text,image){
+  const endpoint=String(userSettings.studiEndpoint||'').trim();
+  const key=String(userSettings.studiKey||'').trim();
+  if(!endpoint||!key)return null;
+  const model=String(userSettings.studiModel||'').trim();
+  const content=image
+    ?[{type:'text',text:text||'Help me with the homework in this image.'},{type:'image_url',image_url:{url:image}}]
+    :(text||'');
+  const body={
+    messages:[
+      {role:'system',content:studiSystemPrompt()},
+      ...studiHistory.slice(-8),
+      {role:'user',content}
+    ],
+    max_tokens:studiMode==='study'?900:400,
+    temperature:0.3
+  };
+  if(model)body.model=model;
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),45000);
+  try{
+    const response=await fetch(endpoint,{
+      method:'POST',
+      mode:'cors',
+      credentials:'omit',
+      cache:'no-store',
+      headers:{'Content-Type':'application/json',Authorization:`Bearer ${key}`},
+      body:JSON.stringify(body),
+      signal:controller.signal
+    });
+    if(!response.ok){
+      const detail=await response.text().catch(()=>'');
+      throw new Error(`HTTP ${response.status}${detail?`: ${detail.slice(0,160)}`:''}`);
+    }
+    const data=await response.json();
+    const message=data?.choices?.[0]?.message?.content;
+    const answer=Array.isArray(message)
+      ?message.map(part=>part?.text||'').join('').trim()
+      :String(message||'').trim();
+    return answer||null;
+  }finally{clearTimeout(timer);}
+}
+
+async function studiAnswer(text,image){
+  const offline=studiOfflineAnswer(text);
+  if(offline)return offline;
+
+  if(studiConnected()){
+    let answer=null;
+    try{
+      answer=await studiAskModel(text,image);
+    }catch(error){
+      console.error('Studi 1.0 could not reach the model:',error);
+      return {html:'<p>I could not reach your model. Check the key and endpoint in <b>Settings → HomeworkBot</b>.</p>'};
+    }
+    if(answer){
+      studiHistory.push({role:'user',content:text||'Help me with this image.'});
+      studiHistory.push({role:'assistant',content:answer});
+      if(studiHistory.length>16)studiHistory.splice(0,studiHistory.length-16);
+      return {html:studiFormat(answer)};
+    }
+    return {html:'<p>Your model sent back an empty answer. Try rephrasing, or check the model name in Settings.</p>'};
+  }
+
+  if(image)return {html:'<p>Reading photos needs a model key. Add one in <b>Settings → HomeworkBot</b>, or type the question so I can solve what I can offline.</p>'};
+  return {html:studiMode==='study'
+    ?'<p>Offline I can solve math, convert units, and build quizzes — try <b>quiz me</b>. Add a model key in <b>Settings → HomeworkBot</b> for deeper study help.</p>'
+    :'<p>Offline I can solve math, convert units, and build quizzes. For everything else, add a model key in <b>Settings → HomeworkBot</b>.</p>'};
+}
+
+function studiAutoGrow(){
+  const input=$('#studi-input');
+  if(!input)return;
+  input.style.height='auto';
+  input.style.height=`${Math.min(input.scrollHeight,132)}px`;
+}
+
+function studiClearImage(){
+  studiPendingImage='';
+  studiPendingImageName='';
+  const input=$('#studi-image-input');
+  if(input)input.value='';
+  const attachment=$('#studi-attachment');
+  if(attachment)attachment.hidden=true;
+  const preview=$('#studi-attachment-preview');
+  if(preview)preview.removeAttribute('src');
+}
+
+async function studiSubmit(){
+  if(studiBusy)return;
+  const input=$('#studi-input');
+  const text=(input?.value||'').trim();
+  const image=studiPendingImage;
+  if(!text&&!image)return;
+  studiBusy=true;
+  const send=$('#studi-send');
+  if(send)send.disabled=true;
+  $('#studi-suggestions')?.classList.add('is-hidden');
+  studiAddMessage('user',text||'Can you help with this?',{image});
+  if(input){input.value='';input.style.height='auto';}
+  studiClearImage();
+  const typing=studiAddMessage('bot','<span class="studi-typing"><i></i><i></i><i></i></span>',{raw:true});
+  try{
+    const answer=await studiAnswer(text,image);
+    if(typing)typing.remove();
+    studiAddMessage('bot',answer.html,{raw:true});
+  }catch(error){
+    console.error('HomeworkBot error:',error);
+    if(typing)typing.remove();
+    studiAddMessage('bot','<p>Something went wrong. Try that again in a moment.</p>',{raw:true});
+  }finally{
+    studiBusy=false;
+    if(send)send.disabled=false;
+    $('#studi-input')?.focus();
+  }
+}
+
+$('#studi-form')?.addEventListener('submit',event=>{event.preventDefault();studiSubmit();});
+$('#studi-input')?.addEventListener('keydown',event=>{
+  if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();studiSubmit();}
+});
+$('#studi-input')?.addEventListener('input',studiAutoGrow);
+$$('.studi-mode').forEach(button=>button.addEventListener('click',()=>setStudiMode(button.dataset.studiMode)));
+$$('.studi-suggestion').forEach(button=>button.addEventListener('click',()=>{
+  const input=$('#studi-input');
+  if(input){input.value=button.dataset.studiPrompt||'';studiAutoGrow();}
+  studiSubmit();
+}));
+$('#studi-image-input')?.addEventListener('change',()=>{
+  const file=$('#studi-image-input').files?.[0];
+  if(!file)return;
+  if(!file.type.startsWith('image/')){notify('Choose an image file.');return;}
+  if(file.size>STUDI_MAX_IMAGE_BYTES){notify('That image is too big. Try one under 6 MB.');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    studiPendingImage=String(reader.result||'');
+    studiPendingImageName=file.name||'image';
+    const preview=$('#studi-attachment-preview');
+    if(preview)preview.src=studiPendingImage;
+    const name=$('#studi-attachment-name');
+    if(name)name.textContent=studiPendingImageName;
+    if($('#studi-attachment'))$('#studi-attachment').hidden=false;
+  };
+  reader.onerror=()=>notify('That image could not be read.');
+  reader.readAsDataURL(file);
+});
+$('#studi-attachment-remove')?.addEventListener('click',studiClearImage);
+$('#studi-log')?.addEventListener('click',event=>{
+  const reveal=event.target.closest('[data-studi-reveal]');
+  if(!reveal)return;
+  const answers=reveal.parentElement?.querySelector('.studi-answers');
+  if(!answers)return;
+  answers.hidden=!answers.hidden;
+  reveal.textContent=answers.hidden?'SHOW ANSWERS':'HIDE ANSWERS';
+});
+(function initHomeworkBot(){
+  if(!$('#studi-log'))return;
+  studiGreeting();
+  setStudiMode(studiMode);
+  updateStudiStatus();
+})();
+
+function studiGreeting(){
+  const log=$('#studi-log');
+  if(!log)return;
+  log.innerHTML='';
+  studiAddMessage('bot','Hi, I am <b>Studi 1.0</b>. Ask a question, attach a photo, or say <b>quiz me</b>. I keep answers short unless you ask for more.',{raw:true});
 }
 
 renderg4m3s();
