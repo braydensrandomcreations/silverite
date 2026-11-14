@@ -1916,6 +1916,8 @@ let studiMode='normal';
 let studiBusy=false;
 let studiPendingImage='';
 let studiPendingImageName='';
+let studiEngine='studi';
+let studiEnginePicked=false;
 const studiHistory=[];
 
 function studiNumber(value){
@@ -1942,9 +1944,9 @@ function studiFormat(text){
 function studiAddMessage(role,content,{raw=false,image=''}={}){
   const log=$('#studi-log');
   if(!log)return null;
+  log.querySelector('.studi-welcome')?.remove();
   const message=document.createElement('div');
   message.className=`studi-msg studi-msg--${role}`;
-  message.innerHTML=`<div class="studi-msg-avatar">${role==='bot'?svgIcon('zap',14):'YOU'}</div>`;
   const body=document.createElement('div');
   body.className='studi-msg-body';
   body.innerHTML=raw?content:studiFormat(content);
@@ -1965,13 +1967,72 @@ function studiConnected(){
   return Boolean(String(userSettings.studiEndpoint||'').trim()&&String(userSettings.studiKey||'').trim());
 }
 
+function studiModelName(){
+  return String(userSettings.studiModel||'').trim()||'Your model';
+}
+
 function updateStudiStatus(){
   const connected=studiConnected();
-  $('.studi-badge')?.classList.toggle('is-online',connected);
+  if(!connected)studiEngine='studi';
+  else if(!studiEnginePicked)studiEngine='model';
+  const online=connected&&studiEngine==='model';
+  $('.studi-badge')?.classList.toggle('is-online',online);
   const status=$('#studi-status');
-  if(status)status.textContent=connected?'MODEL CONNECTED':'OFFLINE READY';
-  const note=$('#studi-engine-note');
-  if(note)note.textContent=connected?`using ${userSettings.studiModel||'your model'}`:'works offline';
+  if(status)status.textContent=online?'Model connected':'Offline ready';
+  renderStudiModel();
+}
+
+function renderStudiModel(){
+  const connected=studiConnected();
+  const online=connected&&studiEngine==='model';
+  const modelOption=$('[data-studi-engine="model"]');
+  if(modelOption){
+    modelOption.disabled=!connected;
+    modelOption.classList.toggle('is-disabled',!connected);
+  }
+  const label=$('#studi-model-label');
+  if(label)label.textContent=online?studiModelName():'Studi 1.0';
+  $('#studi-model-btn')?.classList.toggle('is-connected',online);
+  $$('.studi-model-option').forEach(option=>{
+    const on=option.dataset.studiEngine===studiEngine&&!option.disabled;
+    option.setAttribute('aria-selected',on?'true':'false');
+    option.classList.toggle('is-selected',on);
+  });
+  const name=$('#studi-model-name');
+  if(name)name.textContent=connected?studiModelName():'No model connected';
+  const note=$('#studi-model-note');
+  if(note)note.textContent=connected?'Connected through Settings':'Add a key in Settings';
+  const engineNote=$('#studi-engine-note');
+  if(engineNote)engineNote.textContent=online?`using ${studiModelName()}`:'works offline';
+}
+
+function closeStudiModelMenu({restoreFocus=false}={}){
+  const menu=$('#studi-model-menu');
+  const button=$('#studi-model-btn');
+  if(menu)menu.hidden=true;
+  if(button)button.setAttribute('aria-expanded','false');
+  if(restoreFocus&&button)button.focus({preventScroll:true});
+}
+
+function toggleStudiModelMenu(open){
+  const menu=$('#studi-model-menu');
+  const button=$('#studi-model-btn');
+  if(!menu||!button)return;
+  const next=typeof open==='boolean'?open:menu.hidden;
+  menu.hidden=!next;
+  button.setAttribute('aria-expanded',next?'true':'false');
+  if(next){
+    const target=menu.querySelector('.studi-model-option.is-selected:not(:disabled)')||menu.querySelector('.studi-model-option:not(:disabled)');
+    target?.focus({preventScroll:true});
+  }
+}
+
+function setStudiEngine(engine){
+  studiEnginePicked=true;
+  studiEngine=engine==='model'&&studiConnected()?'model':'studi';
+  updateStudiStatus();
+  closeStudiModelMenu();
+  $('#studi-input')?.focus({preventScroll:true});
 }
 
 function setStudiMode(mode){
@@ -1982,7 +2043,7 @@ function setStudiMode(mode){
     button.setAttribute('aria-selected',on?'true':'false');
   });
   const input=$('#studi-input');
-  if(input)input.placeholder=studiMode==='study'?'Ask for a quiz or a deeper explanation…':'Ask a question, or attach a photo…';
+  if(input)input.placeholder=studiMode==='study'?'Ask for a quiz or a deeper explanation…':'Ask anything, or attach a photo…';
 }
 
 /* --- on-device math --- */
@@ -2275,7 +2336,7 @@ async function studiAnswer(text,image){
   const offline=studiOfflineAnswer(text);
   if(offline)return offline;
 
-  if(studiConnected()){
+  if(studiConnected()&&studiEngine==='model'){
     let answer=null;
     try{
       answer=await studiAskModel(text,image);
@@ -2292,6 +2353,14 @@ async function studiAnswer(text,image){
     return {html:'<p>Your model sent back an empty answer. Try rephrasing, or check the model name in Settings.</p>'};
   }
 
+  if(studiConnected()){
+    const model=`<b>${escapeHTML(studiModelName())}</b>`;
+    if(image)return {html:`<p>Photos use the connected model. Pick ${model} in the model menu next to send.</p>`};
+    return {html:studiMode==='study'
+      ?`<p>Studi 1.0 can quiz you and solve math offline. Pick ${model} in the model menu for deeper study help.</p>`
+      :`<p>Studi 1.0 solves math, converts units, and builds quizzes. Pick ${model} in the model menu for other questions.</p>`};
+  }
+
   if(image)return {html:'<p>Reading photos needs a model key. Add one in <b>Settings → HomeworkBot</b>, or type the question so I can solve what I can offline.</p>'};
   return {html:studiMode==='study'
     ?'<p>Offline I can solve math, convert units, and build quizzes — try <b>quiz me</b>. Add a model key in <b>Settings → HomeworkBot</b> for deeper study help.</p>'
@@ -2302,7 +2371,15 @@ function studiAutoGrow(){
   const input=$('#studi-input');
   if(!input)return;
   input.style.height='auto';
-  input.style.height=`${Math.min(input.scrollHeight,132)}px`;
+  input.style.height=`${Math.min(input.scrollHeight,200)}px`;
+}
+
+function studiUpdateSend(){
+  const send=$('#studi-send');
+  if(!send)return;
+  const input=$('#studi-input');
+  const hasText=Boolean((input?.value||'').trim());
+  send.disabled=studiBusy||(!hasText&&!studiPendingImage);
 }
 
 function studiClearImage(){
@@ -2314,6 +2391,7 @@ function studiClearImage(){
   if(attachment)attachment.hidden=true;
   const preview=$('#studi-attachment-preview');
   if(preview)preview.removeAttribute('src');
+  studiUpdateSend();
 }
 
 async function studiSubmit(){
@@ -2323,9 +2401,7 @@ async function studiSubmit(){
   const image=studiPendingImage;
   if(!text&&!image)return;
   studiBusy=true;
-  const send=$('#studi-send');
-  if(send)send.disabled=true;
-  $('#studi-suggestions')?.classList.add('is-hidden');
+  studiUpdateSend();
   studiAddMessage('user',text||'Can you help with this?',{image});
   if(input){input.value='';input.style.height='auto';}
   studiClearImage();
@@ -2340,7 +2416,7 @@ async function studiSubmit(){
     studiAddMessage('bot','<p>Something went wrong. Try that again in a moment.</p>',{raw:true});
   }finally{
     studiBusy=false;
-    if(send)send.disabled=false;
+    studiUpdateSend();
     $('#studi-input')?.focus();
   }
 }
@@ -2349,13 +2425,8 @@ $('#studi-form')?.addEventListener('submit',event=>{event.preventDefault();studi
 $('#studi-input')?.addEventListener('keydown',event=>{
   if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();studiSubmit();}
 });
-$('#studi-input')?.addEventListener('input',studiAutoGrow);
+$('#studi-input')?.addEventListener('input',()=>{studiAutoGrow();studiUpdateSend();});
 $$('.studi-mode').forEach(button=>button.addEventListener('click',()=>setStudiMode(button.dataset.studiMode)));
-$$('.studi-suggestion').forEach(button=>button.addEventListener('click',()=>{
-  const input=$('#studi-input');
-  if(input){input.value=button.dataset.studiPrompt||'';studiAutoGrow();}
-  studiSubmit();
-}));
 $('#studi-image-input')?.addEventListener('change',()=>{
   const file=$('#studi-image-input').files?.[0];
   if(!file)return;
@@ -2370,12 +2441,50 @@ $('#studi-image-input')?.addEventListener('change',()=>{
     const name=$('#studi-attachment-name');
     if(name)name.textContent=studiPendingImageName;
     if($('#studi-attachment'))$('#studi-attachment').hidden=false;
+    studiUpdateSend();
   };
   reader.onerror=()=>notify('That image could not be read.');
   reader.readAsDataURL(file);
 });
 $('#studi-attachment-remove')?.addEventListener('click',studiClearImage);
+$('#studi-model-btn')?.addEventListener('click',()=>toggleStudiModelMenu());
+$('#studi-model-menu')?.addEventListener('click',event=>{
+  const option=event.target.closest('.studi-model-option');
+  if(!option||option.disabled)return;
+  setStudiEngine(option.dataset.studiEngine);
+});
+$('#studi-model-menu')?.addEventListener('keydown',event=>{
+  const option=event.target.closest('.studi-model-option');
+  if(option&&(event.key==='Enter'||event.key===' ')){
+    event.preventDefault();
+    if(!option.disabled)setStudiEngine(option.dataset.studiEngine);
+    return;
+  }
+  if(event.key!=='ArrowDown'&&event.key!=='ArrowUp')return;
+  event.preventDefault();
+  const options=$$('.studi-model-option').filter(option=>!option.disabled);
+  if(!options.length)return;
+  const current=options.indexOf(document.activeElement);
+  const step=event.key==='ArrowDown'?1:-1;
+  options[(current+step+options.length)%options.length]?.focus({preventScroll:true});
+});
+document.addEventListener('click',event=>{
+  if(!event.target.closest('.studi-model'))closeStudiModelMenu();
+});
+document.addEventListener('keydown',event=>{
+  if(event.key!=='Escape')return;
+  const menu=$('#studi-model-menu');
+  if(menu&&!menu.hidden)closeStudiModelMenu({restoreFocus:true});
+});
 $('#studi-log')?.addEventListener('click',event=>{
+  const prompt=event.target.closest('[data-studi-prompt]');
+  if(prompt){
+    const input=$('#studi-input');
+    if(input)input.value=prompt.dataset.studiPrompt||'';
+    studiAutoGrow();
+    studiSubmit();
+    return;
+  }
   const reveal=event.target.closest('[data-studi-reveal]');
   if(!reveal)return;
   const answers=reveal.parentElement?.querySelector('.studi-answers');
@@ -2388,13 +2497,35 @@ $('#studi-log')?.addEventListener('click',event=>{
   studiGreeting();
   setStudiMode(studiMode);
   updateStudiStatus();
+  studiUpdateSend();
 })();
 
 function studiGreeting(){
   const log=$('#studi-log');
   if(!log)return;
-  log.innerHTML='';
-  studiAddMessage('bot','Hi, I am <b>Studi 1.0</b>. Ask a question, attach a photo, or say <b>quiz me</b>. I keep answers short unless you ask for more.',{raw:true});
+  log.innerHTML=`<div class="studi-welcome">
+    <div class="studi-welcome-mark" aria-hidden="true">${svgIcon('zap',22)}</div>
+    <h2>What are you working on?</h2>
+    <p>Ask a question, attach a photo of your homework, or start a quiz. I'm Studi 1.0 — short answers unless you ask for more.</p>
+    <div class="studi-prompts">
+      <button class="studi-prompt" type="button" data-studi-prompt="What is 15% of 80?">
+        <span class="studi-prompt-icon" aria-hidden="true">%</span>
+        <span class="studi-prompt-text"><b>Work out a percentage</b><small>What is 15% of 80?</small></span>
+      </button>
+      <button class="studi-prompt" type="button" data-studi-prompt="Solve 3x + 5 = 20">
+        <span class="studi-prompt-icon" aria-hidden="true">x</span>
+        <span class="studi-prompt-text"><b>Solve an equation</b><small>Solve 3x + 5 = 20</small></span>
+      </button>
+      <button class="studi-prompt" type="button" data-studi-prompt="Convert 5 km to miles">
+        <span class="studi-prompt-icon" aria-hidden="true">↔</span>
+        <span class="studi-prompt-text"><b>Convert units</b><small>Convert 5 km to miles</small></span>
+      </button>
+      <button class="studi-prompt" type="button" data-studi-prompt="Quiz me">
+        <span class="studi-prompt-icon" aria-hidden="true">?</span>
+        <span class="studi-prompt-text"><b>Take a quick quiz</b><small>Quiz me on some math</small></span>
+      </button>
+    </div>
+  </div>`;
 }
 
 renderg4m3s();

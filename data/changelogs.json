@@ -1,6 +1,6 @@
 [
   {
-    "version": "1.1.0",
+    "version": "1.1.2",
     "date": "2026-11-14",
     "type": "regular",
     "title": "Little Secrets, Cleaner Corners",
@@ -13,7 +13,10 @@
           "A secret thing. Be gentle.",
           "A small br4y signature in the rail.",
           "Press Ctrl+K for a command palette that finds pages, tabs, and games.",
-          "HomeworkBot with Studi 1.0 answers questions, reads photos, and builds quizzes in Study mode."
+          "HomeworkBot with Studi 1.0 answers questions, reads photos, and builds quizzes in Study mode.",
+          "A model picker next to the send button switches between Studi 1.0 and your own connected model.",
+          "HomeworkBot has a cleaner chat layout with quick-start cards and Normal and Study modes.",
+          "The Discord icon on the start menu now opens Discord inside the proxy."
         ]
       },
       {
