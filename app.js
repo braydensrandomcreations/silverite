@@ -117,11 +117,30 @@ const GAME_LIBRARY_EDITS = {
     // "other-game.html": { name: "New display name", image: "https://example.com/thumbnail.png" },
   },
   add: [
-    // {
-    //   name: "My New Game",
-    //   url: "./games/my-new-game.html",
-    //   image: "./images/my-new-game.png"
-    // },
+    {
+      name: "-3",
+      url: "./assets/silverite-games/html/-3.html",
+      image: "./assets/silverite-games/thumb/-3.webp",
+      source: "SILVERITE"
+    },
+    {
+      name: "2048",
+      url: "./assets/silverite-games/html/2048.html",
+      image: "./assets/silverite-games/thumb/2048.jpg",
+      source: "SILVERITE"
+    },
+    {
+      name: "Cut the Rope",
+      url: "./assets/silverite-games/html/cut-the-rope.html",
+      image: "./assets/silverite-games/thumb/cut-the-rope.jpg",
+      source: "SILVERITE"
+    },
+    {
+      name: "We will be adding more games soon!",
+      url: "./assets/silverite-games/html/more-games-soon.html",
+      image: "./assets/silverite-games/thumb/more-games-soon.svg",
+      source: "SILVERITE"
+    },
   ]
 };
 

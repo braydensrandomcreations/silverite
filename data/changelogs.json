@@ -1,5 +1,26 @@
 [
   {
+    "version": "1.5",
+    "date": "2026-11-21",
+    "type": "regular",
+    "title": "More Games On The Way",
+    "sections": [
+      {
+        "label": "Additions",
+        "changes": [
+          "A new 'We will be adding more games soon!' card in the Silverite games library.",
+          "The local games -3, 2048, and Cut the Rope are now listed under Silverite games."
+        ]
+      },
+      {
+        "label": "Fixes",
+        "changes": [
+          "The fullscreen button in the game player no longer renders as a pure white block."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.1.2",
     "date": "2026-11-14",
     "type": "regular",
