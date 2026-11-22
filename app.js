@@ -141,6 +141,14 @@ const GAME_LIBRARY_EDITS = {
     { name: "FNF Vs. Tricky", url: "./assets/silverite-games/html/tricky.html", image: "./assets/silverite-games/thumb/tricky.jfif", source: "SILVERITE" },
     { name: "Wii Sports", url: "./assets/silverite-games/html/wiis.html", image: "./assets/silverite-games/thumb/wiis.jpg", source: "SILVERITE" },
     { name: "FNF Vs. Zardy", url: "./assets/silverite-games/html/zardy.html", image: "./assets/silverite-games/thumb/zardy.webp", source: "SILVERITE" },
+    { name: "The Backrooms", url: "./assets/silverite-games/html/backrooms.html", image: "./assets/no-thumbnail.png", source: "SILVERITE" },
+    { name: "Fireboy & Watergirl", url: "./assets/silverite-games/html/fbwg.html", image: "./assets/no-thumbnail.png", source: "SILVERITE" },
+    { name: "Flappy Bird", url: "./assets/silverite-games/html/flappybird.html", image: "./assets/no-thumbnail.png", source: "SILVERITE" },
+    { name: "Krunker", url: "./assets/silverite-games/html/krunker.html", image: "./assets/silverite-games/thumb/krunker.jfif", source: "SILVERITE" },
+    { name: "Monkey Mart", url: "./assets/silverite-games/html/monkeymart.html", image: "./assets/silverite-games/thumb/monkeymart.jpg", source: "SILVERITE" },
+    { name: "Plants vs. Zombies", url: "./assets/silverite-games/html/pvz.html", image: "./assets/silverite-games/thumb/pvz.jfif", source: "SILVERITE" },
+    { name: "Slope", url: "./assets/silverite-games/html/slope.html", image: "./assets/no-thumbnail.png", source: "SILVERITE" },
+    { name: "Temple Run 2", url: "./assets/silverite-games/html/tr2.html", image: "./assets/silverite-games/thumb/tr2.jpg", source: "SILVERITE" },
   ]
 };
 

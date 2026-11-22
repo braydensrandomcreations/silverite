@@ -8,8 +8,8 @@
       {
         "label": "Additions",
         "changes": [
-          "Added 23 new local games to the Silverite games library, including Basketball Stars, Bloxors, Cut the Rope, Geometry Dash, GTA 3, Happy Wheels, Mario Kart 7, Sonic CD, and more.",
-          "Every new game has a local thumbnail and opens in the Silverite game player."
+          "Added 31 new local games to the Silverite games library, including Basketball Stars, Bloxorz, Cut the Rope, Fireboy & Watergirl, Flappy Bird, Geometry Dash, GTA 3, Happy Wheels, Krunker, Mario Kart 7, Monkey Mart, Plants vs. Zombies, Slope, Sonic CD, Temple Run 2, The Backrooms, and more.",
+          "Each game opens in the Silverite game player; games without a dedicated thumbnail use the standard placeholder."
         ]
       },
       {
@@ -21,7 +21,9 @@
       {
         "label": "Fixes",
         "changes": [
-          "Removed the Truffled corner logo and link from the local game pages."
+          "Removed the Truffled corner logo and link from the local game pages.",
+          "The Backrooms now keeps a 16:9 aspect ratio instead of stretching to the window.",
+          "Plants vs. Zombies now uses a proper HTML/Ruffle wrapper instead of a gadget file."
         ]
       }
     ]
