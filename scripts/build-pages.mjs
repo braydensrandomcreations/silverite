@@ -8,7 +8,7 @@ const outputRoot = path.join(projectRoot, "dist-pages");
 await rm(outputRoot, { recursive: true, force: true });
 await mkdir(outputRoot, { recursive: true });
 
-for (const entry of ["index.html", "app.js", "styles.css", "sw.js", "silverite-uv.config.js", "index.svg", "assets", "data"]) {
+for (const entry of ["index.html", "app.js", "styles.css", "sw.js", "silverite-uv.config.js", "index.svg", "assets", "data", "single-file"]) {
   await cp(path.join(projectRoot, entry), path.join(outputRoot, entry), { recursive: true });
 }
 
