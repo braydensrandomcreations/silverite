@@ -1,5 +1,32 @@
 [
   {
+    "version": "1.5.1",
+    "date": "2026-11-22",
+    "type": "games",
+    "title": "More Local Games",
+    "sections": [
+      {
+        "label": "Additions",
+        "changes": [
+          "Added 23 new local games to the Silverite games library, including Basketball Stars, Bloxors, Cut the Rope, Geometry Dash, GTA 3, Happy Wheels, Mario Kart 7, Sonic CD, and more.",
+          "Every new game has a local thumbnail and opens in the Silverite game player."
+        ]
+      },
+      {
+        "label": "Changes",
+        "changes": [
+          "Replaced the earlier local game set and the 'more games soon' teaser with the new game list."
+        ]
+      },
+      {
+        "label": "Fixes",
+        "changes": [
+          "Removed the Truffled corner logo and link from the local game pages."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.5",
     "date": "2026-11-21",
     "type": "regular",
