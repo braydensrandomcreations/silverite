@@ -119,15 +119,15 @@ const GAME_LIBRARY_EDITS = {
   add: [
     { name: "2048", url: "./assets/silverite-games/html/2048.html", image: "./assets/silverite-games/thumb/2048.jpg", source: "SILVERITE" },
     { name: "Basketball Stars", url: "./assets/silverite-games/html/basketballstars.html", image: "./assets/silverite-games/thumb/basketballstars.jpg", source: "SILVERITE" },
-    { name: "Bloxors", url: "./assets/silverite-games/html/bloxors.html", image: "./assets/silverite-games/thumb/bloxors.jpg", source: "SILVERITE" },
-    { name: "Bogcebus", url: "./assets/silverite-games/html/bogcebus.html", image: "./assets/silverite-games/thumb/bogcebus.png", source: "SILVERITE" },
+    { name: "Bloxorz", url: "./assets/silverite-games/html/bloxors.html", image: "./assets/silverite-games/thumb/bloxors.jpg", source: "SILVERITE" },
+    { name: "Cebus", url: "./assets/silverite-games/html/bogcebus.html", image: "./assets/silverite-games/thumb/bogcebus.png", source: "SILVERITE" },
     { name: "Cut the Rope", url: "./assets/silverite-games/html/ctr.html", image: "./assets/silverite-games/thumb/cut-the-rope.jpg", source: "SILVERITE" },
     { name: "Doodle Jump", url: "./assets/silverite-games/html/doodlejump.html", image: "./assets/silverite-games/thumb/doodlejump.png", source: "SILVERITE" },
     { name: "Friday Night Funkin'", url: "./assets/silverite-games/html/fnf.html", image: "./assets/silverite-games/thumb/fnf.png", source: "SILVERITE" },
-    { name: "Garcello", url: "./assets/silverite-games/html/garcello.html", image: "./assets/silverite-games/thumb/garcello.jpg", source: "SILVERITE" },
+    { name: "FNF Vs. Garcello", url: "./assets/silverite-games/html/garcello.html", image: "./assets/silverite-games/thumb/garcello.jpg", source: "SILVERITE" },
     { name: "Geometry Dash", url: "./assets/silverite-games/html/gd.html", image: "./assets/silverite-games/thumb/gd.jpg", source: "SILVERITE" },
     { name: "GTA 3", url: "./assets/silverite-games/html/gta3.html", image: "./assets/silverite-games/thumb/gta3.jfif", source: "SILVERITE" },
-    { name: "GTag", url: "./assets/silverite-games/html/gtag.html", image: "./assets/silverite-games/thumb/gtag.png", source: "SILVERITE" },
+    { name: "Gorilla Tag", url: "./assets/silverite-games/html/gtag.html", image: "./assets/silverite-games/thumb/gtag.png", source: "SILVERITE" },
     { name: "Gunspin", url: "./assets/silverite-games/html/gunspin.html", image: "./assets/silverite-games/thumb/gunspin.jpg", source: "SILVERITE" },
     { name: "Happy Wheels", url: "./assets/silverite-games/html/happywheels.html", image: "./assets/silverite-games/thumb/happywheels.jfif", source: "SILVERITE" },
     { name: "Kirby Soft and Wet", url: "./assets/silverite-games/html/kirbysoftandwet.html", image: "./assets/silverite-games/thumb/kirbysoftandwet.jfif", source: "SILVERITE" },
@@ -138,9 +138,9 @@ const GAME_LIBRARY_EDITS = {
     { name: "Piggies", url: "./assets/silverite-games/html/piggies.html", image: "./assets/silverite-games/thumb/piggies.jpg", source: "SILVERITE" },
     { name: "Sonic CD", url: "./assets/silverite-games/html/soniccd.html", image: "./assets/silverite-games/thumb/soniccd.webp", source: "SILVERITE" },
     { name: "Tomb of the Mask", url: "./assets/silverite-games/html/tombofthemask.html", image: "./assets/silverite-games/thumb/tombofthemask.png", source: "SILVERITE" },
-    { name: "Tricky", url: "./assets/silverite-games/html/tricky.html", image: "./assets/silverite-games/thumb/tricky.jfif", source: "SILVERITE" },
-    { name: "Wiis", url: "./assets/silverite-games/html/wiis.html", image: "./assets/silverite-games/thumb/wiis.jpg", source: "SILVERITE" },
-    { name: "Zardy", url: "./assets/silverite-games/html/zardy.html", image: "./assets/silverite-games/thumb/zardy.webp", source: "SILVERITE" },
+    { name: "FNF Vs. Tricky", url: "./assets/silverite-games/html/tricky.html", image: "./assets/silverite-games/thumb/tricky.jfif", source: "SILVERITE" },
+    { name: "Wii Sports", url: "./assets/silverite-games/html/wiis.html", image: "./assets/silverite-games/thumb/wiis.jpg", source: "SILVERITE" },
+    { name: "FNF Vs. Zardy", url: "./assets/silverite-games/html/zardy.html", image: "./assets/silverite-games/thumb/zardy.webp", source: "SILVERITE" },
   ]
 };
 
