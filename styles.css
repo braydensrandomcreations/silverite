@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&display=swap');
 :root{
   --bg:#090909;--panel:#111;--panel2:#171717;--line:#343434;--line2:#555;
   --white:#f4f4f4;--muted:#a2a2a2;--accent:#f0f0f0;--accent-rgb:240,240,240;--orange:var(--accent);--rail:46px;--tab-rail:46px;--top:48px;
@@ -951,3 +950,88 @@ html[data-motion="reduced"] .secret-cat-explosion.is-firing{opacity:1!important;
   .studi-prompt:hover{transform:none}
   .studi-send:hover:not(:disabled){transform:none}
 }
+
+/* =====================================================================
+   SILVERITE IDENTITY REFRESH
+   A distinct navy/teal arcade look that replaces the old pixel-browser skin.
+   ===================================================================== */
+:root{
+  --bg:#070b16;--panel:#101a30;--panel2:#16223c;--line:#28375a;--line2:#3d5480;
+  --white:#eaf1ff;--muted:#9aa9c8;
+  --accent:#5ee6c8;--accent-rgb:94,230,200;--orange:var(--accent);
+  --accent-tint:rgba(94,230,200,.13);--accent-tint-strong:rgba(94,230,200,.22);
+  --accent-line:rgba(94,230,200,.62);--accent-glow:rgba(94,230,200,.28);--accent-glow-soft:rgba(94,230,200,.14);
+  --sans:"Segoe UI",Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --display:"Segoe UI",Inter,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+  --pixel:var(--display);--ui-pixel:var(--sans);
+}
+html,body{font-family:var(--sans)}
+body{background-image:radial-gradient(ellipse at 12% 10%,rgba(94,230,200,.13),transparent 34%),radial-gradient(ellipse at 82% 82%,rgba(90,168,255,.12),transparent 38%),linear-gradient(160deg,#070b16,#0a1020 60%,#080d1a)}
+
+/* Text wordmark replaces the old logo images. */
+.loader-brand::before,.brand-logo::before,.g4m3s-brand::before{
+  content:"SILVERITE";display:block;line-height:1;white-space:nowrap;text-align:center;
+  font:800 clamp(34px,6.2vw,68px)/1 var(--display);letter-spacing:.22em;text-indent:.22em;
+  background:linear-gradient(115deg,#7bf1d5 0%,#7aa8ff 56%,#c39bff 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 6px 18px rgba(0,0,0,.5));
+}
+.loader-brand{margin-bottom:30px}
+.loader-logo,.brand-logo img,.g4m3s-brand img{display:none!important}
+.brand-logo,.g4m3s-brand{line-height:1!important}
+.brand-logo{width:min(580px,90vw);margin-bottom:34px}
+.g4m3s-brand{width:min(420px,82vw);margin:0 auto 26px}
+
+.browser-top{background:linear-gradient(90deg,#0a1224,#0d1830);border-bottom-color:var(--line)}
+.address{font-family:var(--sans);border-color:var(--line);border-radius:12px;background:#0a1122}
+.address:focus{border-color:var(--accent)}
+.left-rail,.right-rail{background:linear-gradient(180deg,#0a1122,#0d1730);border-color:var(--line)}
+.rail-btn{border-radius:12px;border-color:transparent;background:rgba(255,255,255,.05)}
+.rail-btn.active{background:var(--accent-tint-strong);border-color:var(--accent-line);color:var(--accent)}
+
+.view{scrollbar-color:var(--line2) #0a1122}
+.home-view{background:radial-gradient(ellipse at 50% 40%,rgba(94,230,200,.08),transparent 55%)}
+.home-center{width:min(720px,100%)}
+.home-search-row{max-width:640px}
+.home-search{border-radius:14px;border:1px solid var(--line);background:rgba(9,15,30,.88);font-family:var(--sans);font-size:14px}
+.home-search:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.12)}
+.home-message{font-family:var(--sans);font-size:12px;letter-spacing:.02em;text-transform:none}
+.social-btn{border-radius:12px;border-color:var(--line);background:rgba(255,255,255,.05)}
+.command-hint{border-radius:12px;border-color:var(--line);background:rgba(255,255,255,.04);font-family:var(--sans)}
+
+.g4m3s-search-wrap{max-width:680px}
+.g4m3s-search{border:1px solid var(--line);border-radius:14px;background:rgba(9,15,30,.92);font-family:var(--sans);font-size:14px;font-weight:400}
+.g4m3s-search::placeholder{color:#7f8daa}
+.game-count{font:700 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;text-shadow:none}
+.library-filter-btn{border-radius:13px;border-color:var(--line);background:rgba(255,255,255,.04)}
+.library-filter-btn.active{border-color:var(--accent);background:var(--accent-tint-strong);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.12)}
+.library-filter-label,.library-filter-fallback{font-family:var(--sans)}
+
+.game-grid{gap:18px}
+.game-card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel2),var(--panel));box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.game-card:hover{border-color:var(--accent-line);box-shadow:0 14px 30px rgba(0,0,0,.35),0 0 22px var(--accent-glow-soft)}
+.game-art{height:150px;border-bottom:1px solid var(--line);border-radius:15px 15px 0 0}
+.game-art:before,.game-art:after,.game-art.has-thumb:before,.game-art.has-thumb:after{display:none!important}
+.art-glyph{font-family:var(--display);font-size:44px;text-shadow:0 5px 18px rgba(0,0,0,.45);transform:none}
+.game-name{height:38px;background:transparent;border-bottom:1px solid var(--line);font:600 13px var(--sans)}
+.game-source{height:20px;border:0;background:rgba(var(--accent-rgb),.08);color:var(--accent);font:700 8px var(--sans);letter-spacing:.14em;text-transform:uppercase}
+.play-btn{width:calc(100% - 12px);margin:6px;border:0;border-radius:10px;background:linear-gradient(120deg,var(--accent),#5aa8ff);color:#04121d;font:700 12px var(--sans);letter-spacing:.09em;text-transform:uppercase;box-shadow:none}
+.play-btn:hover{filter:brightness(1.08);box-shadow:0 6px 16px rgba(var(--accent-rgb),.24)}
+.empty{border-radius:14px;border-color:var(--line);background:rgba(255,255,255,.03);font-family:var(--sans)}
+
+.player-shell{border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 45px rgba(0,0,0,.38)}
+.player-control{border-radius:11px;border-color:var(--line);background:rgba(255,255,255,.05)}
+.player-control:hover{border-color:var(--accent-line);background:var(--accent-tint)}
+.player-footer{background:#0b1428;border-color:var(--line);font-family:var(--sans)}
+.player-title-wrap h1{font-family:var(--display);letter-spacing:-1px}
+
+h1,.lede{font-family:var(--display)}
+.eyebrow{font:700 10px var(--sans);letter-spacing:.22em}
+.panel,.settings-card,.credit-card{border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,rgba(17,27,49,.95),rgba(9,15,29,.96));box-shadow:0 10px 26px rgba(0,0,0,.25)}
+.credit-card--lead{border-color:var(--accent-line)}
+.credit-kicker,.settings-kicker{font-family:var(--sans);font-weight:700;letter-spacing:.16em}
+.credit-card h2{font-family:var(--display)}
+.credit-providers b{font-family:var(--sans);font-size:12px}
+.settings-section-number,.field-label{font-family:var(--sans)}
+.toast{border-radius:12px;border-color:var(--line);background:#0d1730;font-family:var(--sans)}
+.command-dialog{border-radius:16px;border-color:var(--line);background:#0d1730}

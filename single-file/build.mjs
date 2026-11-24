@@ -61,14 +61,13 @@ async function dataUri(file) {
   return `data:${mime};base64,${buffer.toString("base64")}`;
 }
 
-const [logo, noThumbnail, gnIcon, silveriteIcon, truffledIcon, ubzIcon] =
+const [logo, noThumbnail, gnIcon, silveriteIcon, truffledIcon] =
   await Promise.all([
     dataUri("assets/silverite-logo.png"),
     dataUri("assets/no-thumbnail.png"),
     dataUri("assets/icons/gn.png"),
     dataUri("assets/icons/silverite.png"),
-    dataUri("assets/icons/truffled.png"),
-    dataUri("assets/icons/ubz.png")
+    dataUri("assets/icons/truffled.png")
   ]);
 
 const cdn = "https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/";
@@ -77,8 +76,7 @@ const embeddedAssets = [
   ["assets/no-thumbnail.png", noThumbnail],
   ["assets/icons/gn.png", gnIcon],
   ["assets/icons/silverite.png", silveriteIcon],
-  ["assets/icons/truffled.png", truffledIcon],
-  ["assets/icons/ubz.png", ubzIcon]
+  ["assets/icons/truffled.png", truffledIcon]
 ];
 
 let html = htmlSource;

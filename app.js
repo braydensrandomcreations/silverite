@@ -6,94 +6,18 @@
    Leave the list empty to hide the message under the search bar.
    ===================================================================== */
 const HOME_MESSAGES = [
-  "teach wont see ts",
-  "homework trust",
-  "drink water, then pee",
-  "fire haven is better",
-  "half theres a bug",
-  "frick you claude",
-  "you wanna fight me?",
-  "hop on lilys revenge gng",
-  "gorilla tag is not a game about just swinging your a-arms, its game of modding mo-monkeys",
-  "please im begging u",
-  "el teach cant see ts",
-  "me when i lie",
-  "if you see this, tell brayden to see this message lol",
-  "WOW! you found the ULTRA-SUPER DUPER MEGA rare message!! congrats!!",
-  "please mario",
-  "funds busted to femboy clicker - ubzone",
-  "MOLDY HES DED",
-  "put the needle in the hdmi port - br4y",
-  "ctrl+shift+q x2 will give you 2 dollars trust",
-  "do your homework o algo",
-  "keys keys keys keys. you have a different opinion than me? keys keys keys o algo",
-  "play gorilla tag now!",
-  "1845341094. trust me.",
-  "today's forecast: 100 percent chance of gaming",
-  "remember why you opened this tab",
-  "oh no.. im so cringe",
-  "piu piu piu!",
-  "зачем ты это перевел? кстати, ты пиздец какой гей.",
-  "iphone cold dih",
-  "bing bing bing o algo",
-  "我真的非常非常爱你,你为什么哭, 答应我你以后别再哭了, 在这个世界上, 我们时间不多了 ",
-  "thearchy or opposition? which is harder?",
-  "gn-math v2 is lowk pretty good",
-  "NO FUN POLICE ALLOWED",
-  "admin grant tristan.dat",
-  "s*curly cant stop me",
-  "my mother ate fries",
-  "this message was randomly selected. wow",
-  "i know this place better than my home",
-  "this server has a weight limit pink your holdin it up!! - Elliot, 2023",
-  "cooko monster",
-  "goodbah! - chef",
-  "high risk, high reward",
-  "wubbabunga!",
-  "it IS all sunshine and rainbows",
-  "all hail the obama triangle",
-  "in theory, this message should work",
-  "plot twist: you actually finished your homework",
-  "br4y says hello",
-  "floccinaucinihilipilificatiophobia",
-  "silverite but everyone sings it",
-  "bing bing bing o algo",
-  "me when",
-  "zip zorp glubo glorp",
-  "how many messages are there? 68.",
-  "app.js carries",
-  "100% opsec",
-  "dip",
-  "huzzah!",
-  "mei mei snow leopard",
-  "game on! - Coach",
-  "bonk",
-  "me is yay",
-  "Before you criticize someone, walk a mile in their shoes. That way, you'll be a mile from them, and you'll have their shoes. — Jack Hande",
-  "if someone tells you a secret, tell everyone else so you dont forget it - MrPotato0820",
-  "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe. - Albert Einstein",
-  "I love this mod, this is my favroite fnf mod, everything about it just great, im happy they updated the mod and gald that I played it - swaggotskills",
-  "when teach is serious but u pull the baldi",
-  "bumm bum bummm bumm buummmmm",
-  "no kitty this is mah pot pah!",
-  "im so in love with you, your so in love with him, i dont know what to do",
-  "if your gonna be a skid, at least use claude - OrangeesDev",
-  "I MODDED IT, I MODDED IT!! GET MODDED BY ASPEN GET MODDED BY ASPEN - Aspen, 2026",
-  "stinky",
-  "",
-  "mei mei snow leopard",
-  "game on! - Coach",
-  "bonk",
-  "me is yay",
-  "Before you criticize someone, walk a mile in their shoes. That way, you'll be a mile from them, and you'll have their shoes. — Jack Hande",
-  "if someone tells you a secret, tell everyone else so you dont forget it - MrPotato0820",
-  "Two things are infinite: the universe and human stupidity; and I'm not sure about the universe. - Albert Einstein",
-  "I love this mod, this is my favroite fnf mod, everything about it just great, im happy they updated the mod and gald that I played it - swaggotskills",
-  "when teach is serious but u pull the baldi",
-  "bumm bum bummm bumm buummmmm",
-  "no kitty this is mah pot pah!",
-  "im so in love with you, your so in love with him, i dont know what to do",
-  "if your gonna be a skid, at least use claude - OrangeesDev"
+  "Welcome back to Silverite.",
+  "Pick a game. Ignore the responsibilities.",
+  "Your high score is waiting.",
+  "The retry button is free. Use it.",
+  "Take a break. This is the break.",
+  "Press Ctrl+K to jump anywhere.",
+  "Small site. Big arcade.",
+  "Games load better with a snack nearby.",
+  "Built by br4y, powered by late nights.",
+  "If it loads, it counts as a win.",
+  "Silverite: your tab's happy place.",
+  "The home button is right where you left it.",
 ];
 
 /* =====================================================================
@@ -158,159 +82,7 @@ function isAllowedGameAssetUrl(value, kind) {
   return kind === 'image' && /^data:image\/(?:png|jpeg|webp|gif|svg\+xml);base64,/i.test(url);
 }
 
-// Remote game library: pinned to this reviewed commit so upstream branch changes do not silently replace game code.
-const GAME_REPO_COMMIT = "78f00c90fc2ea2834341d6ed19f716994d9aced7";
-const GAME_RAW_ROOT = `https://cdn.jsdelivr.net/gh/s0n-1m-cr1n3/sc13nc3@${GAME_REPO_COMMIT}/`;
-const GAME_HTML_PATH = "assets/html/main/";
-const GAME_IMAGE_PATH = "assets/img/main/";
-const GAME_HTML_FILES = ["112.html","1v1.html","2048.html","8ballpool.html","Antidisestablishmentarianism.html","Pneumonoultramicroscopicsilicovolcanoconiosis.html","UvuvwevwevweOnyetenvewveUgwemubwemOssas.html","actualgd.html","adanceoffireandice.html","alpha126.html","awesomeschoolhouse.html","awesometanks2.html","badtime.html","baldicreepyrun.html","baldisbasics.html","baldisdecompile.html","bank.html","bartblast.html","baseballbros.html","basketbros.html","basketrandom.html","beeswarm.html","bendy.html","bendyclicker.html","bhop.html","bitlife.html","bladeball.html","blockblast.html","bloodmoney.html","bloodmoney2.html","bowmasters.html","brotatonewdawn.html","brotatopaws.html","buckshot.html","buildnow.html","caseohbasics.html","catburgular.html","ccm152.html","cheese.html","chicken.html","chromedino.html","clash.html","classof09.html","clusterrush.html","codercraft152.html","cookie.html","crazycattle.html","crazyroll.html","crossyroad.html","cs.html","cuphead.html","dashio.html","drawclimber.html","escaperoad.html","escaperoad2.html","escaperoad3.html","femboyclicker.html","flappybird.html","flyinggorilla.html","fnaf.html","fnf.html","fnfbfdi26.html","fnfbside.html","fnfgarcello.html","fnfhex.html","fnfhitsingle.html","fnfindiecross.html","fnfkapi.html","fnflullaby.html","fnfmario.html","fnfmidfight.html","fnfmiku.html","fnfneo.html","fnfourple.html","fnfpibby.html","fnfqt.html","fnfshaggy.html","fnfsky.html","fnfsoft.html","fnfsonicexe.html","fnftails.html","fnftricky.html","fnfwhitty.html","footballbros.html","frag.html","fuchsiax152.html","fuchsiaxghost152.html","googlesnake.html","goosegame.html","granny.html","granny2.html","grannynightmare.html","grannyonline.html","growagarden.html","gtag.html","gtamods.html","hackedimpossiblequiz.html","hardestgame.html","hollowknight.html","hollowknightsilksong.html","impossiblequiz.html","indev.html","indiantruckdriving.html","infinite.html","js125.html","js13.html","js173.html","js18.html","jumbomario.html","justbuild.html","kindergarten.html","kindergarten2.html","kindergarten3.html","lethalape.html","lobotomy.html","memetash.html","minus3.html","minus3remastred.html","minusb.html","n0va152.html","nebula152.html","nitclient152.html","nitroclash.html","oddfuture152.html","onepiece.html","oneshot.html","orange.html","osu.html","pi18.html","plagueinc.html","pocketediton.html","polytrack.html","preccm152.html","pvz.html","ragdoll.html","raldiscrackhouse.html","repo.html","retrobowl.html","rocketgoal.html","run3.html","russia.html","sab.html","sab2player.html","shadow18.html","slime.html","slope.html","slowroads.html","snowballio.html","snowrider.html","soccerbros.html","soccerrandom.html","soflowheelielife.html","spacewaves.html","spin.html","sprialroll.html","sprinter.html","stickman.html","subway.html","supermario63.html","supermarketsim.html","survivalrace.html","t3.html","terraria.html","themathisleaking.html","three.html","time.html","tombofmask.html","triplethorror.html","tripletobby.html","ultra.html","undertale.html","unfairmario.html","uwu18.html","vicecity.html","wasm030.html","wasm112.html","wasm18.html","webdashers.html","wheresbaldi.html","whosyourdaddy.html","wrestlebros.html"];
-const GAME_IMAGE_FILES = ["030.png","112.png","125.png","126.png","13.png","173.png","188.png","1v1lol.png","2048.png","3dgeometrydash.png","3dgeometrydasheditor.png","8ballpool.png","PVZ.png","UvuvwevwevweOnyetenvewveUgwemubwemOssas.png","actualgd.png","adanceoffireandice.png","antidisestablishmentarianism.png","awesometanks2.png","badtimesimulator.png","baldicreepyrun.png","baldisbasics.png","baldisbasicsdecompile.png","bankrob2.png","bartblast.png","baseballbros.png","basketbros.png","basketrandom.png","beeswarm.png","bendy.png","bendyclicker.png","bhop.png","bitlife.png","bladeball.png","blockblast.png","bloodmoney.png","bloodmoney2.png","bowmasters.png","brawlstars.png","brokengdwebplus.png","brotatonewdawn.png","brotatopawsandclaws.png","buckshotroullete.png","buildnowgg.png","caseohbasics.png","catburgular.png","cheesechompers.png","chickenwar.png","chromedino.png","clashroyale.png","classof09.png","client152.png","client188.png","clusterrush.png","cookie.png","crazycattle3d.png","crazyroll3d.png","crossyroad.png","cs16.png","cuphead.png","dashio.png","dokidokiliterature.png","drawclimber.png","driveinrussia.png","eaglercraft.png","eaglercraft112.png","escaperoad.png","escaperoad2.png","escaperoad3.png","femboyclicker.png","fivenightsatfrickbears3.png","flappybird.png","flyinggorilla.png","fnafscratch.png","fnfvsbfdi26.png","fnfvsbside.png","fnfvsgarcello.png","fnfvshex.png","fnfvshitsingle.png","fnfvsindiecross.png","fnfvskapi.png","fnfvslullaby.png","fnfvsmariomadness.png","fnfvsmidfight.png","fnfvsmiku.png","fnfvsneo.png","fnfvsourpleguy.png","fnfvspibby.png","fnfvsqt.png","fnfvsshaggy.png","fnfvssky.png","fnfvssoft.png","fnfvssonicexe.png","fnfvstailsgetstrolled4.png","fnfvstricky.png","fnfvswhitty.png","footballbros.png","frageb.png","fridaynightfunkin.png","gabrielsschoolhouse.png","gdwebplus.png","gdwebplusversion1.png","geometrydashbreeze.png","geometrydashlite.png","geometrydashroad.png","geometrydashscratch.png","geometrydashsubzero.png","geometrydashsubzeroscratch.png","geometrydashwave.png","googlesnake.png","gorillatag.png","granny.png","grannychapter2.png","grannyhorror.png","grannymultiplayer.png","growagarden.png","gtamods.png","gtavicecity.png","gunspin.png","hollowknight.png","hollowknightsilksong.png","imaginemathfacts.png","impossiblequiz.png","impossiblequizhacked.png","indev.png","indiantruckdriving.png","infinitecraft.png","jefferyBIGEbasics.png","jumbomario.png","justbuildlol.png","kindergarten.png","kindergarten2.png","kindergarten3.png","lethalape.png","lobtomoydash.png","memetash.png","minecraftpocketedition.png","minus3.png","minus3remastred.png","minusb.png","nitroclash.png","onepiece.png","oneshot.png","orangeroulette.png","osu.png","plagueinc.png","pneumonoultramicroscopicsilicovolcanoconiosis.png","polytrack.png","ragdollarchers.png","raldiscrackhouse.png","repo.png","retrobowl.png","ro16.png","rocketgoalakarocketleague.png","run3.png","slimerancher.png","slope.png","slowroads.png","snowballio.png","snowrider.png","soccerbros.png","soccerrandom.png","soflowheelielife.png","spacewaves.png","sprialroll.png","sprinter.png","stealabrainrot.png","stealabrainrot2player.png","stickmanduel.png","subwaysurfers.png","supermario63.png","supermarketsimulator.png","survivalrace.png","t3.png","tattletail.png","terraria.png","themathisleaking.png","theworldshardestgame.png","three.png","timeshooterswat2.png","tombofmask.png","tripletobby.png","tungtungtunghorror.jpg","ultrakill.png","undertale.png","unfairmario.png","untitledgoosegame.png","wavedash.png","waveroad3d.png","webdashers.png","whereisbaldi.png","whosyourdaddy.png","wrestlebros.png"];
-const GAME_IMAGE_BY_STEM = new Map(GAME_IMAGE_FILES.map(file => [file.replace(/\.[^.]+$/, "").toLowerCase(), file]));
-const GAME_IMAGE_ALIASES = {
-  "1v1": "1v1lol.png",
-  "badtime": "badtimesimulator.png",
-  "baldisdecompile": "baldisbasicsdecompile.png",
-  "brokendash": "brokengdwebplus.png",
-  "brotatopaws": "brotatopawsandclaws.png",
-  "buckshot": "buckshotroullete.png",
-  "buildnow": "buildnowgg.png",
-  "cheese": "cheesechompers.png",
-  "chicken": "chickenwar.png",
-  "clash": "clashroyale.png",
-  "cs": "cs16.png",
-  "gdscratch": "geometrydashscratch.png",
-  "gdsubzero": "geometrydashsubzero.png",
-  "gdsubzeroscratch": "geometrydashsubzeroscratch.png",
-  "gdwave": "geometrydashwave.png",
-  "gdweb": "gdwebplus.png",
-  "gdwebv1": "gdwebplusversion1.png",
-  "goosegame": "untitledgoosegame.png",
-  "granny2": "grannychapter2.png",
-  "grannynightmare": "grannyhorror.png",
-  "grannyonline": "grannymultiplayer.png",
-  "gtag": "gorillatag.png",
-  "hackedimpossiblequiz": "impossiblequizhacked.png",
-  "hardestgame": "theworldshardestgame.png",
-  "justbuild": "justbuildlol.png",
-  "lobotomy": "lobtomoydash.png",
-  "rocketgoal": "rocketgoalakarocketleague.png",
-  "russia": "driveinrussia.png",
-  "sab": "stealabrainrot.png",
-  "sab2player": "stealabrainrot2player.png",
-  "stickman": "stickmanduel.png",
-  "subway": "subwaysurfers.png",
-  "supermarketsim": "supermarketsimulator.png",
-  "wheresbaldi": "whereisbaldi.png",
-  "wasm030": "030.png",
-  "wasm112": "112.png",
-  "antidisestablishmentarianism": "antidisestablishmentarianism.png",
-  "pneumonoultramicroscopicsilicovolcanoconiosis": "pneumonoultramicroscopicsilicovolcanoconiosis.png",
-  "pvz": "PVZ.png",
-  "alpha126": "126.png",
-  "fnaf": "fnafscratch.png",
-  "fnf": "fridaynightfunkin.png",
-  "gd3d": "3dgeometrydash.png",
-  "gdlite": "geometrydashlite.png",
-  "gdwave2": "geometrydashwave.png",
-  "gdwave3d": "3dgeometrydash.png",
-  "infinite": "infinitecraft.png",
-  "js125": "125.png",
-  "js13": "13.png",
-  "js173": "173.png",
-  "orange": "orangeroulette.png",
-  "pocketediton": "minecraftpocketedition.png",
-  "ragdoll": "ragdollarchers.png",
-  "slime": "slimerancher.png",
-  "ultra": "ultrakill.png",
-  "vicecity": "gtavicecity.png",
-  "breeze": "geometrydashbreeze.png"
-};
-const FNF_GAME_META = {
-  "fnf": { title: "Friday Night Funkin'", image: "fridaynightfunkin.png" },
-  "fnfbfdi26": { title: "FNF vs. BFDI 26", image: "fnfvsbfdi26.png" },
-  "fnfbside": { title: "FNF B-Sides", image: "fnfvsbside.png" },
-  "fnfgarcello": { title: "FNF vs. Garcello", image: "fnfvsgarcello.png" },
-  "fnfhex": { title: "FNF vs. Hex", image: "fnfvshex.png" },
-  "fnfhitsingle": { title: "FNF: Hit Single Real", image: "fnfvshitsingle.png" },
-  "fnfindiecross": { title: "FNF: Indie Cross", image: "fnfvsindiecross.png" },
-  "fnfkapi": { title: "FNF vs. Kapi", image: "fnfvskapi.png" },
-  "fnflullaby": { title: "FNF: Hypno's Lullaby", image: "fnfvslullaby.png" },
-  "fnfmario": { title: "FNF: Mario's Madness", image: "fnfvsmariomadness.png" },
-  "fnfmidfight": { title: "FNF: Mid-Fight Masses", image: "fnfvsmidfight.png" },
-  "fnfmiku": { title: "FNF vs. Miku", image: "fnfvsmiku.png" },
-  "fnfneo": { title: "FNF Neo", image: "fnfvsneo.png" },
-  "fnfourple": { title: "FNF: Ourple Guy", image: "fnfvsourpleguy.png" },
-  "fnfpibby": { title: "FNF: Pibby Corrupted", image: "fnfvspibby.png" },
-  "fnfqt": { title: "FNF vs. QT", image: "fnfvsqt.png" },
-  "fnfshaggy": { title: "FNF vs. Shaggy", image: "fnfvsshaggy.png" },
-  "fnfsky": { title: "FNF vs. Sky", image: "fnfvssky.png" },
-  "fnfsoft": { title: "FNF Soft", image: "fnfvssoft.png" },
-  "fnfsonicexe": { title: "FNF vs. Sonic.EXE", image: "fnfvssonicexe.png" },
-  "fnftails": { title: "FNF: Tails Gets Trolled 4", image: "fnfvstailsgetstrolled4.png" },
-  "fnftricky": { title: "FNF vs. Tricky", image: "fnfvstricky.png" },
-  "fnfwhitty": { title: "FNF vs. Whitty", image: "fnfvswhitty.png" }
-};
-const GAME_TITLE_OVERRIDES = {
-  "1v1":"1v1 LOL", "8ballpool":"8 Ball Pool", "adanceoffireandice":"A Dance of Fire and Ice", "actualgd":"Actual Geometry Dash",
-  "awesometanks2":"Awesome Tanks 2", "baldicreepyrun":"Baldi's Basics Creepy Run", "baldisbasics":"Baldi's Basics", "baseballbros":"Baseball Bros",
-  "basketbros":"Basket Bros", "basketrandom":"Basket Random", "beeswarm":"Bee Swarm Simulator", "bhop":"Bhop",
-  "bitlife":"BitLife", "bladeball":"Blade Ball", "blockblast":"Block Blast", "chromedino":"Chrome Dino", "classof09":"Class of '09",
-  "cookie":"Cookie Clicker", "crazycattle":"Crazy Cattle 3D", "crazyroll":"Crazy Roll 3D", "crossyroad":"Crossy Road", "cs":"Counter-Strike",
-  "drawclimber":"Draw Climber", "escaperoad":"Escape Road", "flappybird":"Flappy Bird", "flyinggorilla":"Flying Gorilla", "fnf":"Friday Night Funkin'",
-  "footballbros":"Football Bros", "gdlite":"Geometry Dash Lite", "gdsubzero":"Geometry Dash SubZero", "gdwave":"Geometry Dash Wave", "gdweb":"Geometry Dash Web",
-  "googlesnake":"Google Snake", "goosegame":"Untitled Goose Game", "granny":"Granny", "growagarden":"Grow a Garden", "gtag":"Gorilla Tag",
-  "gtamods":"GTA Mods", "hackedimpossiblequiz":"The Impossible Quiz (Hacked)", "hardestgame":"The World's Hardest Game", "hollowknight":"Hollow Knight",
-  "hollowknightsilksong":"Hollow Knight: Silksong", "impossiblequiz":"The Impossible Quiz", "indiantruckdriving":"Indian Truck Driving", "jumbomario":"Jumbo Mario",
-  "kindergarten":"Kindergarten", "lethalape":"Lethal Ape", "memetash":"Meme Tash", "minus3":"Minus 3", "nitroclash":"NitroClash", "onepiece":"One Piece",
-  "oneshot":"OneShot", "osu":"osu!", "plagueinc":"Plague Inc.", "polytrack":"Polytrack", "pvz":"Plants vs. Zombies", "raldiscrackhouse":"Raldi's Crackhouse",
-  "retrobowl":"Retro Bowl", "rocketgoal":"Rocket Goal", "run3":"Run 3", "slope":"Slope", "slowroads":"Slow Roads", "snowballio":"Snowball.io",
-  "snowrider":"Snow Rider", "soccerbros":"Soccer Bros", "soccerrandom":"Soccer Random", "spacewaves":"Space Waves", "sprialroll":"Spiral Roll",
-  "subway":"Subway Surfers", "supermario63":"Super Mario 63", "supermarketsim":"Supermarket Simulator", "survivalrace":"Survival Race",
-  "themathisleaking":"The Math Is Leaking", "tombofmask":"Tomb of the Mask", "undertale":"Undertale", "unfairmario":"Unfair Mario",
-  "webdashers":"Web Dashers", "whosyourdaddy":"Who's Your Daddy?", "wrestlebros":"Wrestle Bros"
-};
-const BLOCKED_GAME_FILES = new Set(["bank.html"]); // contains dynamic-code and third-party ad-domain signals; kept out of the player.
-function gameTitleFromFile(file) {
-  const stem = file.replace(/\.html?$/i, "");
-  const key = stem.toLowerCase();
-  if (FNF_GAME_META[key]) return FNF_GAME_META[key].title;
-  if (GAME_TITLE_OVERRIDES[key]) return GAME_TITLE_OVERRIDES[key];
-  return stem.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([a-zA-Z])([0-9])/g, "$1 $2").replace(/([0-9])([a-zA-Z])/g, "$1 $2").replace(/[_-]+/g, " ").replace(/\b[a-z]/g, c => c.toUpperCase());
-}
-function makeGameManifest() {
-  const removed = new Set((GAME_LIBRARY_EDITS.remove || []).map(file => String(file).trim().toLowerCase()));
-  return GAME_HTML_FILES.filter(file => {
-    const key = file.replace(/\.html?$/i, "").toLowerCase();
-    return !BLOCKED_GAME_FILES.has(file) && !removed.has(file.toLowerCase()) && !removed.has(key);
-  }).map((file, index) => {
-    const stem = file.replace(/\.html?$/i, "");
-    const key = stem.toLowerCase();
-    const edit = GAME_LIBRARY_EDITS.overrides?.[key] || GAME_LIBRARY_EDITS.overrides?.[file] || {};
-    const originalImage = (FNF_GAME_META[key] && FNF_GAME_META[key].image) || GAME_IMAGE_BY_STEM.get(key) || GAME_IMAGE_ALIASES[key] || null;
-    const title = String(edit.name || gameTitleFromFile(file)).trim();
-    const imageWasSet = Object.prototype.hasOwnProperty.call(edit, 'image');
-    const selectedImage = imageWasSet ? String(edit.image || '').trim() : (originalImage ? GAME_RAW_ROOT + GAME_IMAGE_PATH + encodeURIComponent(originalImage) : '');
-    const image = selectedImage && isAllowedGameAssetUrl(selectedImage, 'image')
-      ? (imageWasSet ? selectedImage : selectedImage)
-      : '';
-    const glyph = title.replace(/[^a-z0-9 ]/gi, "").split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0]).join("").toUpperCase() || "G";
-    const arts = ["gray","violet","blue","mint","orange","pink","gold","green"];
-    return { name:title, file, url:GAME_RAW_ROOT + GAME_HTML_PATH + encodeURIComponent(file), image, glyph, art:arts[index % arts.length], source:"UBZONE" };
-  });
-}
-function makeCustomGameManifest() {
-  const arts = ["gray","violet","blue","mint","orange","pink","gold","green"];
-  return (GAME_LIBRARY_EDITS.add || []).map((entry, index) => {
-    if (!entry || !String(entry.name || '').trim() || !isAllowedGameAssetUrl(entry.url, 'game')) return null;
-    const name = String(entry.name).trim();
-    const url = String(entry.url).trim();
-    const image = entry.image && isAllowedGameAssetUrl(entry.image, 'image') ? String(entry.image).trim() : '';
-    const file = String(entry.file || url.split(/[?#]/)[0].split('/').pop() || (name + '.html'));
-    const glyph = name.replace(/[^a-z0-9 ]/gi, '').split(/\s+/).filter(Boolean).slice(0,2).map(w => w[0]).join('').toUpperCase() || 'G';
-    return { name, file, url, image, glyph, art:arts[index % arts.length], source:String(entry.source || "CUSTOM").trim().toUpperCase() };
-  }).filter(Boolean);
-}
-let g4m3s = [...makeGameManifest(), ...makeCustomGameManifest()];
+let g4m3s = [...makeCustomGameManifest()];
 
 
 /* EXTERNAL GAME SOURCES. Catalog metadata is fetched on startup; game files are loaded only when clicked. */
@@ -494,11 +266,10 @@ async function loadExternalGameLibraries() {
   console.info("Silverite external game sources loaded", window.SILVERITE_SOURCE_COUNTS);
   return window.SILVERITE_SOURCE_COUNTS;
 }
-// Warm every repository image, any custom/overridden thumbnail, and each playable game document.
+// Warm every local game thumbnail and each playable game document.
 // The browser decides how long cached files are retained. Cross-origin game pages need CORS to be fetch-preloaded.
 const GAME_PRELOAD_ITEMS = [
   ...Array.from(new Set([
-    ...GAME_IMAGE_FILES.map(file => GAME_RAW_ROOT + GAME_IMAGE_PATH + encodeURIComponent(file)),
     ...g4m3s.map(game => game.image).filter(Boolean)
   ])).map(url => ({kind:'image', label:url, url})),
   ...g4m3s.map(game => ({kind:'game', label:game.file, url:game.url}))
@@ -570,7 +341,7 @@ const $=(s,root=document)=>root.querySelector(s);
 const $$=(s,root=document)=>[...root.querySelectorAll(s)];
 const SETTINGS_KEY='silverite-settings-v2';
 const LEGACY_SETTINGS_KEY='silverite-settings-v1';
-const DEFAULT_SETTINGS={accent:'#f0f0f0',accentRgb:'240,240,240',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundStyle:'grid',backgroundImage:'',backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'scramjet',defaultTransport:'libcurl',studiKey:'',studiEndpoint:'',studiModel:''};
+const DEFAULT_SETTINGS={accent:'#5ee6c8',accentRgb:'94,230,200',cursorStyle:'default',cursorImage:'',cursorGlow:true,glowIntensity:100,backgroundStyle:'grid',backgroundImage:'',backgroundGrid:true,showClock:true,reduceMotion:false,confirmClose:false,defaultEngine:'scramjet',defaultTransport:'libcurl',studiKey:'',studiEndpoint:'',studiModel:''};
 let userSettings={...DEFAULT_SETTINGS};
 try{
   const currentSettings=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
@@ -582,11 +353,11 @@ try{
     if(legacySettings&&typeof legacySettings==='object'){
       userSettings={...DEFAULT_SETTINGS,...legacySettings};
       if(!Object.hasOwn(legacySettings,'backgroundStyle'))userSettings.backgroundStyle=legacySettings.backgroundGrid===false?'off':'grid';
-      // The old release used amber as its built-in default. Migrate that default to white,
+      // The old release used amber or white as its built-in default. Migrate those to teal,
       // while preserving any accent the user deliberately chose.
       if(String(legacySettings.accent||'').toLowerCase()==='#ffb52e'){
-        userSettings.accent='#f0f0f0';
-        userSettings.accentRgb='240,240,240';
+        userSettings.accent='#5ee6c8';
+        userSettings.accentRgb='94,230,200';
       }
       localStorage.setItem(SETTINGS_KEY,JSON.stringify(userSettings));
     }
@@ -635,7 +406,6 @@ let currentGamePage = 0;
 let selectedGameLibrary = "SILVERITE";
 const GAME_LIBRARY_FILTERS = [
   {id:"SILVERITE",name:"Silverite games",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/silverite.png"},
-  {id:"UBZONE",name:"UBZone",fallback:"U",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ubz.png"},
   {id:"GN-MATH",name:"GN-MATH",fallback:"π",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/gn.png"},
   {id:"UGS",name:"Ultimate Game Stash",fallback:"UGS",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/ugs.png"},
   {id:"SERAPH",name:"Seraph",fallback:"S",icon:"https://cdn.jsdelivr.net/gh/braydensrandomcreations/silverite@main/assets/icons/seraph.png"},
@@ -656,7 +426,7 @@ function libraryFilterTemplate(filter,count){
 function renderLibraryFilters(){
   const host=$('#library-filter-bar');if(!host)return;
   const counts=new Map();
-  for(const game of g4m3s){const source=String(game.source||'UBZONE').toUpperCase();counts.set(source,(counts.get(source)||0)+1);}
+  for(const game of g4m3s){const source=String(game.source||'SILVERITE').toUpperCase();counts.set(source,(counts.get(source)||0)+1);}
   const activeSources=new Set(counts.keys());
   const visible=GAME_LIBRARY_FILTERS.filter(filter=>filter.id==='GN-MATH'||filter.id==='SILVERITE'||activeSources.has(filter.id));
   // Keep any custom source names visible too, so editing GAME_LIBRARY_EDITS.add can introduce new libraries.
@@ -667,7 +437,7 @@ function renderLibraryFilters(){
 function renderg4m3s(){
   const q=$('#game-search').value.trim().toLowerCase();
   const list=g4m3s.filter(g=>{
-    const source=String(g.source||'UBZONE').toUpperCase();
+    const source=String(g.source||'SILVERITE').toUpperCase();
     const matchesLibrary=selectedGameLibrary==='ALL'||(selectedGameLibrary==='FAVORITES'?favorites.has(g.name):source===selectedGameLibrary);
     const matchesSearch=!q||g.name.toLowerCase().includes(q)||g.file.toLowerCase().includes(q)||source.toLowerCase().includes(q);
     return matchesLibrary&&matchesSearch;
@@ -675,8 +445,8 @@ function renderg4m3s(){
   list.sort((a,b)=>a.name.localeCompare(b.name,undefined,{sensitivity:'base',numeric:true}));
   renderLibraryFilters();
   const shown=Math.min(list.length,(currentGamePage+1)*G4M3S_PAGE_SIZE);
-  $('#game-count').textContent=`${list.length} G4M3S${shown<list.length?' · SHOWING '+shown:''}`;
-  $('#game-grid').innerHTML=list.length?list.slice(0,shown).map(cardTemplate).join('')+(shown<list.length?`<button class="play-btn load-more-games" data-load-more>LOAD MORE · ${list.length-shown} LEFT</button>`:''):'<div class="empty">NO G4M3S FOUND. TRY ANOTHER SEARCH.</div>';
+  $('#game-count').textContent=`${list.length} GAMES${shown<list.length?' · SHOWING '+shown:''}`;
+  $('#game-grid').innerHTML=list.length?list.slice(0,shown).map(cardTemplate).join('')+(shown<list.length?`<button class="play-btn load-more-games" data-load-more>LOAD MORE · ${list.length-shown} LEFT</button>`:''):'<div class="empty">NO GAMES FOUND. TRY ANOTHER SEARCH.</div>';
 }
 let currentGame=null;
 let gameLoadToken=0;

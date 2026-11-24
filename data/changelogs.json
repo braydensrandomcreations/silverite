@@ -1,5 +1,27 @@
 [
   {
+    "version": "1.5.2",
+    "date": "2026-11-24",
+    "type": "regular",
+    "title": "A New Silverite",
+    "sections": [
+      {
+        "label": "Removals",
+        "changes": [
+          "Removed the UBZONE game library, its filter, its icon, and every UBZONE/unblockedzone label from Silverite and the portable build.",
+          "Removed the leftover unblockedzone watermark from the local 2048 game."
+        ]
+      },
+      {
+        "label": "Changes",
+        "changes": [
+          "Rebuilt the interface around a new navy-and-teal identity with modern typography, rounded cards, and a text wordmark.",
+          "Local Silverite games and the other game libraries remain available."
+        ]
+      }
+    ]
+  },
+  {
     "version": "1.5.1",
     "date": "2026-11-22",
     "type": "games",
